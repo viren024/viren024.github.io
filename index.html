@@ -9,1285 +9,213 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    /* ── RESET & VARS ─────────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:         #0d0f14;
-      --bg2:        #13161e;
-      --bg3:        #1a1e28;
-      --surface:    #1e2330;
-      --border:     #2a3045;
-      --gold:       #c9a84c;
-      --gold-light: #e8c97a;
-      --gold-dim:   #8a6e30;
-      --text:       #e8e6df;
-      --text-muted: #8a8f9e;
-      --text-dim:   #555b6e;
-      --accent:     #4a90d9;
-      --green:      #3dba7c;
-      --red:        #e05a5a;
-      --font-disp:  'Playfair Display', Georgia, serif;
-      --font-body:  'DM Sans', sans-serif;
-      --font-mono:  'DM Mono', monospace;
-      --max:        1160px;
-      --ease:       cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-body);
-      font-size: 16px;
-      line-height: 1.7;
-      overflow-x: hidden;
-    }
-
-    ::selection { background: var(--gold); color: var(--bg); }
-
-    a { color: inherit; text-decoration: none; }
-
-    /* ── NOISE TEXTURE OVERLAY ────────────────────────────────────────────── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.4;
-    }
-
-    /* ── NAV ──────────────────────────────────────────────────────────────── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 0 2rem;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(13, 15, 20, 0.85);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      transition: border-color 0.3s;
-    }
-
-    .nav-logo {
-      font-family: var(--font-disp);
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: 0.02em;
-    }
-
-    .nav-logo span { color: var(--gold); }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-size: 0.8rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      transition: color 0.2s;
-      position: relative;
-    }
-
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px; left: 0;
-      width: 0; height: 1px;
-      background: var(--gold);
-      transition: width 0.3s var(--ease);
-    }
-
-    .nav-links a:hover { color: var(--gold); }
-    .nav-links a:hover::after { width: 100%; }
-
-    .nav-cta {
-      padding: 0.45rem 1.2rem;
-      background: transparent;
-      border: 1px solid var(--gold-dim);
-      border-radius: 2px;
-      color: var(--gold) !important;
-      font-size: 0.75rem !important;
-      font-weight: 600 !important;
-      letter-spacing: 0.1em !important;
-      text-transform: uppercase !important;
-      transition: background 0.2s, border-color 0.2s !important;
-    }
-
-    .nav-cta::after { display: none !important; }
-    .nav-cta:hover { background: var(--gold) !important; color: var(--bg) !important; }
-
-    /* hamburger */
-    .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
-    .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--text-muted); transition: all 0.3s; }
-
-    /* ── HERO ─────────────────────────────────────────────────────────────── */
-    #hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
-      padding: 100px 2rem 60px;
-    }
-
-    .hero-grid-bg {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 60px 60px;
-      opacity: 0.25;
-      mask-image: radial-gradient(ellipse 80% 60% at 60% 50%, black 20%, transparent 80%);
-    }
-
-    .hero-glow {
-      position: absolute;
-      right: -10%;
-      top: 15%;
-      width: 700px;
-      height: 700px;
-      background: radial-gradient(ellipse, rgba(201,168,76,0.07) 0%, transparent 65%);
-      pointer-events: none;
-    }
-
-    .hero-glow-2 {
-      position: absolute;
-      left: -5%;
-      bottom: 10%;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(ellipse, rgba(74,144,217,0.05) 0%, transparent 65%);
-      pointer-events: none;
-    }
-
-    .hero-inner {
-      max-width: var(--max);
-      margin: 0 auto;
-      width: 100%;
-      display: grid;
-      grid-template-columns: 1fr 400px;
-      gap: 4rem;
-      align-items: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1.5rem;
-    }
-
-    .hero-eyebrow::before {
-      content: '';
-      display: block;
-      width: 32px;
-      height: 1px;
-      background: var(--gold);
-    }
-
-    .hero-name {
-      font-family: var(--font-disp);
-      font-size: clamp(3.2rem, 6vw, 5.2rem);
-      font-weight: 900;
-      line-height: 1.0;
-      color: var(--text);
-      margin-bottom: 0.4rem;
-    }
-
-    .hero-name em {
-      font-style: normal;
-      color: var(--gold);
-      display: block;
-    }
-
-    .hero-title {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      letter-spacing: 0.15em;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-bottom: 2rem;
-      padding-left: 2px;
-    }
-
-    .hero-desc {
-      font-size: 1.05rem;
-      color: var(--text-muted);
-      line-height: 1.75;
-      max-width: 520px;
-      margin-bottom: 2.5rem;
-    }
-
-    .hero-desc strong { color: var(--text); font-weight: 500; }
-
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 3rem;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.85rem 2rem;
-      background: var(--gold);
-      color: var(--bg);
-      font-family: var(--font-body);
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      border: none;
-      border-radius: 2px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
-    }
-
-    .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
-
-    .btn-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.85rem 2rem;
-      background: transparent;
-      color: var(--text);
-      font-family: var(--font-body);
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      cursor: pointer;
-      transition: border-color 0.2s, color 0.2s, transform 0.15s;
-    }
-
-    .btn-secondary:hover { border-color: var(--gold-dim); color: var(--gold); transform: translateY(-1px); }
-
-    .hero-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.3rem 0.75rem;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      font-size: 0.73rem;
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-      transition: border-color 0.2s, color 0.2s;
-    }
-
-    .tag:hover { border-color: var(--gold-dim); color: var(--gold); }
-
-    /* STATS CARD */
-    .hero-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .hero-stats::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
-    }
-
-    .stat-item {
-      background: var(--bg2);
-      padding: 1.75rem 1.5rem;
-      text-align: center;
-      transition: background 0.2s;
-    }
-
-    .stat-item:hover { background: var(--bg3); }
-
-    .stat-num {
-      font-family: var(--font-disp);
-      font-size: 2.6rem;
-      font-weight: 900;
-      color: var(--gold);
-      line-height: 1;
-      margin-bottom: 0.35rem;
-    }
-
-    .stat-label {
-      font-size: 0.72rem;
-      font-family: var(--font-mono);
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      line-height: 1.3;
-    }
-
-    .hero-avail {
-      margin-top: 1.5rem;
-      padding: 1rem 1.25rem;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .avail-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      flex-shrink: 0;
-      box-shadow: 0 0 0 3px rgba(61,186,124,0.2);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 0 3px rgba(61,186,124,0.2); }
-      50% { box-shadow: 0 0 0 6px rgba(61,186,124,0.1); }
-    }
-
-    .avail-text { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
-    .avail-text strong { color: var(--green); font-weight: 600; }
-
-    /* ── SECTION SHELL ────────────────────────────────────────────────────── */
-    section { position: relative; z-index: 1; }
-
-    .section-inner {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
-
-    .section-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 0.75rem;
-    }
-
-    .section-label::before {
-      content: '';
-      display: block;
-      width: 24px;
-      height: 1px;
-      background: var(--gold);
-    }
-
-    .section-title {
-      font-family: var(--font-disp);
-      font-size: clamp(1.8rem, 3vw, 2.6rem);
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.15;
-      margin-bottom: 0.75rem;
-    }
-
-    .section-sub {
-      font-size: 1rem;
-      color: var(--text-muted);
-      max-width: 560px;
-      margin-bottom: 3rem;
-    }
-
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 0;
-    }
-
-    /* ── ABOUT ────────────────────────────────────────────────────────────── */
-    #about {
-      padding: 100px 0;
-      background: var(--bg2);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5rem;
-      align-items: start;
-    }
-
-    .about-text p {
-      color: var(--text-muted);
-      line-height: 1.8;
-      margin-bottom: 1.2rem;
-    }
-
-    .about-text p strong { color: var(--text); font-weight: 500; }
-
-    .about-text p:last-child { margin-bottom: 0; }
-
-    .about-right { display: flex; flex-direction: column; gap: 2rem; }
-
-    .about-block {
-      padding: 1.5rem;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      border-left: 2px solid var(--gold-dim);
-    }
-
-    .about-block h4 {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 0.85rem;
-    }
-
-    .about-block-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-
-    .about-tag {
-      padding: 0.25rem 0.65rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      font-size: 0.73rem;
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-    }
-
-    /* ── EXPERIENCE ───────────────────────────────────────────────────────── */
-    #experience { padding: 100px 0; }
-
-    .exp-list { display: flex; flex-direction: column; gap: 1px; }
-
-    .exp-item {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-      transition: border-color 0.3s;
-    }
-
-    .exp-item:hover { border-color: var(--gold-dim); }
-
-    .exp-header {
-      padding: 2rem 2.5rem;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 2rem;
-      align-items: start;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .exp-header::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      background: var(--gold-dim);
-      transition: background 0.2s;
-    }
-
-    .exp-item:hover .exp-header::before { background: var(--gold); }
-
-    .exp-role {
-      font-family: var(--font-disp);
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.3rem;
-    }
-
-    .exp-company {
-      font-size: 0.88rem;
-      color: var(--gold);
-      font-weight: 500;
-      margin-bottom: 0.15rem;
-    }
-
-    .exp-location {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      letter-spacing: 0.05em;
-    }
-
-    .exp-dates {
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    .exp-date-range {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-    }
-
-    .exp-badge {
-      display: inline-block;
-      margin-top: 0.4rem;
-      padding: 0.2rem 0.6rem;
-      background: rgba(61,186,124,0.1);
-      border: 1px solid rgba(61,186,124,0.25);
-      border-radius: 2px;
-      font-size: 0.65rem;
-      font-family: var(--font-mono);
-      color: var(--green);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .exp-body {
-      padding: 0 2.5rem 2rem;
-    }
-
-    .exp-body ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    .exp-body li {
-      display: flex;
-      gap: 0.85rem;
-      font-size: 0.92rem;
-      color: var(--text-muted);
-      line-height: 1.65;
-    }
-
-    .exp-body li::before {
-      content: '—';
-      color: var(--gold-dim);
-      flex-shrink: 0;
-      margin-top: 0.05em;
-    }
-
-    .exp-body li strong { color: var(--text); font-weight: 500; }
-
-    /* ── PORTFOLIO ────────────────────────────────────────────────────────── */
-    #portfolio {
-      padding: 100px 0;
-      background: var(--bg2);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .portfolio-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
-    }
-
-    .portfolio-card {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-      transition: border-color 0.3s, transform 0.2s;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .portfolio-card:hover { border-color: var(--gold-dim); transform: translateY(-3px); }
-
-    .portfolio-card.span-full {
-      grid-column: 1 / -1;
-    }
-
-    .card-preview {
-      background: var(--bg);
-      padding: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 200px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-preview-doc {
-      width: 140px;
-      background: #fff;
-      border-radius: 2px;
-      padding: 12px 10px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-      transform: rotate(-1.5deg);
-      position: relative;
-    }
-
-    .doc-line {
-      height: 6px;
-      border-radius: 3px;
-      background: #e0e0e0;
-      margin-bottom: 5px;
-    }
-
-    .doc-line.dark { background: #1F4E79; width: 70%; }
-    .doc-line.mid  { background: #2E75B6; width: 90%; }
-    .doc-line.thin { height: 4px; background: #d0d0d0; }
-    .doc-line.s    { width: 60%; }
-    .doc-line.m    { width: 80%; }
-    .doc-line.l    { width: 95%; }
-
-    .doc-table { display: flex; flex-direction: column; gap: 3px; margin-top: 8px; }
-    .doc-row   { display: flex; gap: 3px; }
-    .doc-cell  { height: 5px; flex: 1; border-radius: 1px; background: #ebebeb; }
-    .doc-cell.hdr { background: #1F4E79; }
-
-    .preview-badge {
-      position: absolute;
-      top: 1rem; right: 1rem;
-      padding: 0.25rem 0.6rem;
-      background: var(--gold);
-      color: var(--bg);
-      font-size: 0.62rem;
-      font-family: var(--font-mono);
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      border-radius: 2px;
-    }
-
-    .coming-preview {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      opacity: 0.4;
-    }
-
-    .coming-icon {
-      width: 48px; height: 48px;
-      border: 2px dashed var(--border);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem;
-    }
-
-    .coming-text {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    /* ── LIVE DOCUMENT CARD (replaces iframe) ─────────────────────────────── */
-    .live-doc-card {
-      background: var(--bg);
-      padding: 2.5rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
-      position: relative;
-      overflow: hidden;
-      min-height: 160px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .live-doc-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
-    }
-
-    .live-doc-left {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
-    .live-doc-icon {
-      width: 64px;
-      height: 80px;
-      background: #fff;
-      border-radius: 3px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      padding: 6px 5px;
-      gap: 3px;
-      transform: rotate(-2deg);
-    }
-
-    .live-doc-icon .dl { height: 4px; border-radius: 2px; background: #e0e0e0; }
-    .live-doc-icon .dl.h { background: #1F4E79; width: 65%; }
-    .live-doc-icon .dl.m { background: #2E75B6; width: 85%; }
-    .live-doc-icon .dl.s { width: 50%; }
-
-    .live-doc-info {}
-
-    .live-doc-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--green);
-      margin-bottom: 0.4rem;
-    }
-
-    .live-doc-status::before {
-      content: '';
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 0 2px rgba(61,186,124,0.2);
-    }
-
-    .live-doc-name {
-      font-family: var(--font-disp);
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.2rem;
-    }
-
-    .live-doc-version {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      color: var(--text-dim);
-    }
-
-    .live-doc-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      flex-shrink: 0;
-    }
-
-    .btn-view-pdf {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.6rem 1.25rem;
-      background: var(--gold);
-      color: var(--bg);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      border-radius: 2px;
-      transition: background 0.2s, transform 0.15s;
-      white-space: nowrap;
-    }
-
-    .btn-view-pdf:hover { background: var(--gold-light); transform: translateY(-1px); }
-
-    .btn-download-pdf {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.6rem 1.25rem;
-      background: transparent;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      transition: border-color 0.2s, color 0.2s;
-      white-space: nowrap;
-    }
-
-    .btn-download-pdf:hover { border-color: var(--gold-dim); color: var(--gold); }
-
-    .card-body { padding: 1.75rem; flex: 1; }
-
-    .card-type {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 0.5rem;
-    }
-
-    .card-title {
-      font-family: var(--font-disp);
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.6rem;
-      line-height: 1.25;
-    }
-
-    .card-desc {
-      font-size: 0.87rem;
-      color: var(--text-muted);
-      line-height: 1.65;
-      margin-bottom: 1.25rem;
-    }
-
-    .card-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-
-    .chip {
-      padding: 0.2rem 0.55rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      font-size: 0.67rem;
-      font-family: var(--font-mono);
-      color: var(--text-dim);
-    }
-
-    .card-footer {
-      padding: 1rem 1.75rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .card-meta {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--text-dim);
-    }
-
-    .card-link {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--gold);
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      transition: gap 0.2s;
-    }
-
-    .card-link:hover { gap: 0.6rem; }
-
-    .card-link-disabled {
-      font-size: 0.68rem;
-      color: var(--text-dim);
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    /* confidentiality note */
-    .conf-note {
-      margin-top: 2.5rem;
-      padding: 1.25rem 1.5rem;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-left: 2px solid var(--gold-dim);
-      border-radius: 4px;
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-    }
-
-    .conf-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; opacity: 0.6; }
-
-    .conf-note p {
-      font-size: 0.83rem;
-      color: var(--text-muted);
-      line-height: 1.65;
-    }
-
-    /* ── EXPERTISE ────────────────────────────────────────────────────────── */
-    #expertise { padding: 100px 0; }
-
-    .expertise-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-    }
-
-    .expertise-card {
-      padding: 2rem;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      transition: border-color 0.3s, background 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .expertise-card::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 0; height: 1px;
-      background: var(--gold);
-      transition: width 0.4s var(--ease);
-    }
-
-    .expertise-card:hover { border-color: var(--gold-dim); background: var(--bg3); }
-    .expertise-card:hover::after { width: 100%; }
-
-    .exp-card-icon {
-      font-size: 1.6rem;
-      margin-bottom: 1rem;
-      display: block;
-    }
-
-    .exp-card-title {
-      font-family: var(--font-disp);
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.6rem;
-    }
-
-    .exp-card-text {
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      line-height: 1.65;
-    }
-
-    /* ── TOOLS ────────────────────────────────────────────────────────────── */
-    #tools {
-      padding: 100px 0;
-      background: var(--bg2);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2rem;
-    }
-
-    .tools-group h4 {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tool-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.45rem 0;
-      border-bottom: 1px solid var(--bg3);
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      transition: color 0.2s;
-    }
-
-    .tool-item:hover { color: var(--text); }
-
-    .tool-item::before {
-      content: '';
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: var(--gold-dim);
-      flex-shrink: 0;
-    }
-
-    .certs-section {
-      margin-top: 3rem;
-      padding-top: 3rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .certs-group-label {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 0.6rem;
-    }
-
-    .certs-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-    }
-
-    .cert-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      padding: 0.5rem 1rem;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      font-size: 0.78rem;
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-      transition: border-color 0.2s, color 0.2s;
-      white-space: nowrap;
-    }
-
-    .cert-badge:hover { border-color: var(--gold-dim); color: var(--gold); }
-
-    .cert-badge svg {
-      width: 14px; height: 14px;
-      flex-shrink: 0;
-      opacity: 0.7;
-      fill: currentColor;
-    }
-
-    .edu-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      padding: 0.6rem 1.1rem;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-left: 2px solid var(--gold-dim);
-      border-radius: 2px;
-      font-size: 0.78rem;
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-      transition: border-color 0.2s, color 0.2s;
-    }
-
-    .edu-badge:hover { border-color: var(--gold-dim); color: var(--gold); }
-
-    .edu-badge svg {
-      width: 14px; height: 14px;
-      flex-shrink: 0;
-      opacity: 0.6;
-      fill: currentColor;
-    }
-
-    .edu-badge strong { color: var(--text); font-weight: 500; }
-
-    /* ── CONTACT ──────────────────────────────────────────────────────────── */
-    #contact { padding: 100px 0 120px; }
-
-    .contact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5rem;
-      align-items: start;
-    }
-
-    .contact-intro p {
-      font-size: 1rem;
-      color: var(--text-muted);
-      line-height: 1.8;
-      margin-bottom: 1.5rem;
-    }
-
-    .contact-links { display: flex; flex-direction: column; gap: 0.75rem; }
-
-    .contact-link {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 1.25rem;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      transition: border-color 0.2s, background 0.2s;
-    }
-
-    .contact-link:hover { border-color: var(--gold-dim); background: var(--bg3); }
-
-    .cl-icon {
-      width: 36px; height: 36px;
-      border-radius: 4px;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
-
-    .cl-label {
-      font-size: 0.7rem;
-      font-family: var(--font-mono);
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.1rem;
-    }
-
-    .cl-value {
-      font-size: 0.9rem;
-      color: var(--text);
-      font-weight: 500;
-    }
-
-    .contact-right { display: flex; flex-direction: column; gap: 1.25rem; }
-
-    .contact-card {
-      padding: 2rem;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      border-top: 2px solid var(--gold-dim);
-    }
-
-    .contact-card h4 {
-      font-family: var(--font-disp);
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.6rem;
-    }
-
-    .contact-card p {
-      font-size: 0.87rem;
-      color: var(--text-muted);
-      line-height: 1.65;
-    }
-
-    .contact-card .tag-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
-
-    /* ── FOOTER ───────────────────────────────────────────────────────────── */
-    footer {
-      padding: 2rem;
-      border-top: 1px solid var(--border);
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .footer-left {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-dim);
-    }
-
-    .footer-links { display: flex; gap: 1.5rem; }
-
-    .footer-links a {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      transition: color 0.2s;
-    }
-
-    .footer-links a:hover { color: var(--gold); }
-
-    /* ── FADE-IN ANIMATIONS ───────────────────────────────────────────────── */
-    .fade-up {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.65s var(--ease), transform 0.65s var(--ease);
-    }
-
-    .fade-up.will-animate {
-      opacity: 0;
-      transform: translateY(28px);
-    }
-
-    .fade-up.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .fade-up:nth-child(2) { transition-delay: 0.08s; }
-    .fade-up:nth-child(3) { transition-delay: 0.16s; }
-    .fade-up:nth-child(4) { transition-delay: 0.24s; }
-    .fade-up:nth-child(5) { transition-delay: 0.32s; }
-    .fade-up:nth-child(6) { transition-delay: 0.40s; }
-
-    /* ── MOBILE ───────────────────────────────────────────────────────────── */
-    @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
-      .hero-stats { grid-template-columns: repeat(4, 1fr); }
-      .stat-num { font-size: 2rem; }
-      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-      .expertise-grid { grid-template-columns: 1fr 1fr; }
-      .tools-grid { grid-template-columns: 1fr 1fr; }
-      .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-      .live-doc-card { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
-      .live-doc-actions { flex-direction: row; }
-    }
-
-    @media (max-width: 640px) {
-      .nav-links { display: none; }
-      .nav-links.open {
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        top: 64px; left: 0; right: 0;
-        background: var(--bg);
-        border-bottom: 1px solid var(--border);
-        padding: 1.5rem 2rem;
-        gap: 1.25rem;
-        z-index: 99;
-      }
-      .nav-toggle { display: flex; }
-      .hero-stats { grid-template-columns: 1fr 1fr; }
-      .portfolio-grid { grid-template-columns: 1fr; }
-      .portfolio-card.span-full { grid-column: auto; }
-      .expertise-grid { grid-template-columns: 1fr; }
-      .tools-grid { grid-template-columns: 1fr 1fr; }
-      footer { flex-direction: column; align-items: flex-start; }
-      .live-doc-actions { flex-direction: column; width: 100%; }
-      .btn-view-pdf, .btn-download-pdf { justify-content: center; }
-    }
-
-    @media (max-width: 400px) {
-      .tools-grid { grid-template-columns: 1fr; }
-    }
+      --bg:#0d0f14;--bg2:#13161e;--bg3:#1a1e28;--surface:#1e2330;--border:#2a3045;
+      --gold:#c9a84c;--gold-light:#e8c97a;--gold-dim:#8a6e30;
+      --text:#e8e6df;--text-muted:#8a8f9e;--text-dim:#555b6e;
+      --accent:#4a90d9;--green:#3dba7c;--red:#e05a5a;
+      --font-disp:'Playfair Display',Georgia,serif;
+      --font-body:'DM Sans',sans-serif;
+      --font-mono:'DM Mono',monospace;
+      --max:1160px;--ease:cubic-bezier(0.22,1,0.36,1);
+    }
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden;}
+    ::selection{background:var(--gold);color:var(--bg);}
+    a{color:inherit;text-decoration:none;}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(13,15,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:border-color 0.3s;}
+    .nav-logo{font-family:var(--font-disp);font-size:1.15rem;font-weight:700;color:var(--text);letter-spacing:0.02em;}
+    .nav-logo span{color:var(--gold);}
+    .nav-links{display:flex;gap:2rem;list-style:none;}
+    .nav-links a{font-size:0.8rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);transition:color 0.2s;position:relative;}
+    .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--gold);transition:width 0.3s var(--ease);}
+    .nav-links a:hover{color:var(--gold);}
+    .nav-links a:hover::after{width:100%;}
+    .nav-cta{padding:0.45rem 1.2rem;background:transparent;border:1px solid var(--gold-dim);border-radius:2px;color:var(--gold)!important;font-size:0.75rem!important;font-weight:600!important;letter-spacing:0.1em!important;text-transform:uppercase!important;transition:background 0.2s,border-color 0.2s!important;}
+    .nav-cta::after{display:none!important;}
+    .nav-cta:hover{background:var(--gold)!important;color:var(--bg)!important;}
+    .nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+    .nav-toggle span{display:block;width:22px;height:2px;background:var(--text-muted);transition:all 0.3s;}
+    #hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:100px 2rem 60px;}
+    .hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:0.25;mask-image:radial-gradient(ellipse 80% 60% at 60% 50%,black 20%,transparent 80%);}
+    .hero-glow{position:absolute;right:-10%;top:15%;width:700px;height:700px;background:radial-gradient(ellipse,rgba(201,168,76,0.07) 0%,transparent 65%);pointer-events:none;}
+    .hero-glow-2{position:absolute;left:-5%;bottom:10%;width:500px;height:500px;background:radial-gradient(ellipse,rgba(74,144,217,0.05) 0%,transparent 65%);pointer-events:none;}
+    .hero-inner{max-width:var(--max);margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 400px;gap:4rem;align-items:center;position:relative;z-index:1;}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:0.6rem;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;}
+    .hero-eyebrow::before{content:'';display:block;width:32px;height:1px;background:var(--gold);}
+    .hero-name{font-family:var(--font-disp);font-size:clamp(3.2rem,6vw,5.2rem);font-weight:900;line-height:1.0;color:var(--text);margin-bottom:0.4rem;}
+    .hero-name em{font-style:normal;color:var(--gold);display:block;}
+    .hero-title{font-family:var(--font-mono);font-size:0.85rem;letter-spacing:0.15em;color:var(--text-muted);text-transform:uppercase;margin-bottom:2rem;padding-left:2px;}
+    .hero-desc{font-size:1.05rem;color:var(--text-muted);line-height:1.75;max-width:520px;margin-bottom:2.5rem;}
+    .hero-desc strong{color:var(--text);font-weight:500;}
+    .hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem;}
+    .btn-primary{display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;background:var(--gold);color:var(--bg);font-family:var(--font-body);font-size:0.82rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s,transform 0.15s;}
+    .btn-primary:hover{background:var(--gold-light);transform:translateY(-1px);}
+    .btn-secondary{display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;background:transparent;color:var(--text);font-family:var(--font-body);font-size:0.82rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;border:1px solid var(--border);border-radius:2px;cursor:pointer;transition:border-color 0.2s,color 0.2s,transform 0.15s;}
+    .btn-secondary:hover{border-color:var(--gold-dim);color:var(--gold);transform:translateY(-1px);}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:0.5rem;}
+    .tag{display:inline-flex;align-items:center;padding:0.3rem 0.75rem;background:var(--bg3);border:1px solid var(--border);border-radius:2px;font-size:0.73rem;font-family:var(--font-mono);color:var(--text-muted);letter-spacing:0.05em;transition:border-color 0.2s,color 0.2s;}
+    .tag:hover{border-color:var(--gold-dim);color:var(--gold);}
+    .hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;position:relative;}
+    .hero-stats::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-dim));}
+    .stat-item{background:var(--bg2);padding:1.75rem 1.5rem;text-align:center;transition:background 0.2s;}
+    .stat-item:hover{background:var(--bg3);}
+    .stat-num{font-family:var(--font-disp);font-size:2.6rem;font-weight:900;color:var(--gold);line-height:1;margin-bottom:0.35rem;}
+    .stat-label{font-size:0.72rem;font-family:var(--font-mono);color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;line-height:1.3;}
+    .hero-avail{margin-top:1.5rem;padding:1rem 1.25rem;background:var(--bg2);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;gap:0.75rem;}
+    .avail-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 0 3px rgba(61,186,124,0.2);animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(61,186,124,0.2);}50%{box-shadow:0 0 0 6px rgba(61,186,124,0.1);}}
+    .avail-text{font-size:0.78rem;color:var(--text-muted);line-height:1.4;}
+    .avail-text strong{color:var(--green);font-weight:600;}
+    section{position:relative;z-index:1;}
+    .section-inner{max-width:var(--max);margin:0 auto;padding:0 2rem;}
+    .section-label{display:inline-flex;align-items:center;gap:0.6rem;font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:0.75rem;}
+    .section-label::before{content:'';display:block;width:24px;height:1px;background:var(--gold);}
+    .section-title{font-family:var(--font-disp);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:700;color:var(--text);line-height:1.15;margin-bottom:0.75rem;}
+    .section-sub{font-size:1rem;color:var(--text-muted);max-width:560px;margin-bottom:3rem;}
+    .divider{border:none;border-top:1px solid var(--border);margin:0;}
+    #about{padding:100px 0;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+    .about-text p{color:var(--text-muted);line-height:1.8;margin-bottom:1.2rem;}
+    .about-text p strong{color:var(--text);font-weight:500;}
+    .about-text p:last-child{margin-bottom:0;}
+    .about-right{display:flex;flex-direction:column;gap:2rem;}
+    .about-block{padding:1.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:4px;border-left:2px solid var(--gold-dim);}
+    .about-block h4{font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:0.85rem;}
+    .about-block-tags{display:flex;flex-wrap:wrap;gap:0.4rem;}
+    .about-tag{padding:0.25rem 0.65rem;background:var(--surface);border:1px solid var(--border);border-radius:2px;font-size:0.73rem;font-family:var(--font-mono);color:var(--text-muted);}
+    #experience{padding:100px 0;}
+    .exp-list{display:flex;flex-direction:column;gap:1px;}
+    .exp-item{background:var(--bg2);border:1px solid var(--border);border-radius:4px;overflow:hidden;transition:border-color 0.3s;}
+    .exp-item:hover{border-color:var(--gold-dim);}
+    .exp-header{padding:2rem 2.5rem;display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:start;cursor:pointer;position:relative;}
+    .exp-header::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold-dim);transition:background 0.2s;}
+    .exp-item:hover .exp-header::before{background:var(--gold);}
+    .exp-role{font-family:var(--font-disp);font-size:1.25rem;font-weight:700;color:var(--text);margin-bottom:0.3rem;}
+    .exp-company{font-size:0.88rem;color:var(--gold);font-weight:500;margin-bottom:0.15rem;}
+    .exp-location{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-dim);letter-spacing:0.05em;}
+    .exp-dates{text-align:right;flex-shrink:0;}
+    .exp-date-range{font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);letter-spacing:0.05em;white-space:nowrap;}
+    .exp-badge{display:inline-block;margin-top:0.4rem;padding:0.2rem 0.6rem;background:rgba(61,186,124,0.1);border:1px solid rgba(61,186,124,0.25);border-radius:2px;font-size:0.65rem;font-family:var(--font-mono);color:var(--green);letter-spacing:0.1em;text-transform:uppercase;}
+    .exp-body{padding:0 2.5rem 2rem;}
+    .exp-body ul{list-style:none;display:flex;flex-direction:column;gap:0.6rem;}
+    .exp-body li{display:flex;gap:0.85rem;font-size:0.92rem;color:var(--text-muted);line-height:1.65;}
+    .exp-body li::before{content:'—';color:var(--gold-dim);flex-shrink:0;margin-top:0.05em;}
+    .exp-body li strong{color:var(--text);font-weight:500;}
+    #portfolio{padding:100px 0;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .portfolio-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;}
+    .portfolio-card{background:var(--bg3);border:1px solid var(--border);border-radius:4px;overflow:hidden;transition:border-color 0.3s,transform 0.2s;display:flex;flex-direction:column;}
+    .portfolio-card:hover{border-color:var(--gold-dim);transform:translateY(-3px);}
+    .portfolio-card.span-full{grid-column:1/-1;}
+    .card-preview{background:var(--bg);padding:2rem;display:flex;align-items:center;justify-content:center;min-height:200px;position:relative;overflow:hidden;}
+    .card-preview-doc{width:140px;background:#fff;border-radius:2px;padding:12px 10px;box-shadow:0 20px 60px rgba(0,0,0,0.5);transform:rotate(-1.5deg);position:relative;}
+    .doc-line{height:6px;border-radius:3px;background:#e0e0e0;margin-bottom:5px;}
+    .doc-line.dark{background:#1F4E79;width:70%;}
+    .doc-line.mid{background:#2E75B6;width:90%;}
+    .doc-line.thin{height:4px;background:#d0d0d0;}
+    .doc-line.s{width:60%;}
+    .doc-line.m{width:80%;}
+    .doc-line.l{width:95%;}
+    .doc-table{display:flex;flex-direction:column;gap:3px;margin-top:8px;}
+    .doc-row{display:flex;gap:3px;}
+    .doc-cell{height:5px;flex:1;border-radius:1px;background:#ebebeb;}
+    .doc-cell.hdr{background:#1F4E79;}
+    .preview-badge{position:absolute;top:1rem;right:1rem;padding:0.25rem 0.6rem;background:var(--gold);color:var(--bg);font-size:0.62rem;font-family:var(--font-mono);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;border-radius:2px;}
+    .coming-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem;opacity:0.4;}
+    .coming-icon{width:48px;height:48px;border:2px dashed var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+    .coming-text{font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;}
+    .live-doc-card{background:var(--bg);padding:2.5rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;position:relative;overflow:hidden;min-height:160px;border-bottom:1px solid var(--border);}
+    .live-doc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-dim));}
+    .live-doc-left{display:flex;align-items:center;gap:1.5rem;}
+    .live-doc-icon{width:64px;height:80px;background:#fff;border-radius:3px;box-shadow:0 8px 32px rgba(0,0,0,0.4);flex-shrink:0;display:flex;flex-direction:column;padding:6px 5px;gap:3px;transform:rotate(-2deg);}
+    .live-doc-icon .dl{height:4px;border-radius:2px;background:#e0e0e0;}
+    .live-doc-icon .dl.h{background:#1F4E79;width:65%;}
+    .live-doc-icon .dl.m{background:#2E75B6;width:85%;}
+    .live-doc-icon .dl.s{width:50%;}
+    .live-doc-status{display:inline-flex;align-items:center;gap:0.4rem;font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--green);margin-bottom:0.4rem;}
+    .live-doc-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 2px rgba(61,186,124,0.2);}
+    .live-doc-name{font-family:var(--font-disp);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;}
+    .live-doc-version{font-family:var(--font-mono);font-size:0.68rem;color:var(--text-dim);}
+    .live-doc-actions{display:flex;flex-direction:column;gap:0.5rem;flex-shrink:0;}
+    .btn-view-pdf{display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.25rem;background:var(--gold);color:var(--bg);font-family:var(--font-mono);font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;border-radius:2px;transition:background 0.2s,transform 0.15s;white-space:nowrap;}
+    .btn-view-pdf:hover{background:var(--gold-light);transform:translateY(-1px);}
+    .btn-download-pdf{display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.25rem;background:transparent;color:var(--text-muted);font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;border:1px solid var(--border);border-radius:2px;transition:border-color 0.2s,color 0.2s;white-space:nowrap;}
+    .btn-download-pdf:hover{border-color:var(--gold-dim);color:var(--gold);}
+    .card-body{padding:1.75rem;flex:1;}
+    .card-type{font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:0.5rem;}
+    .card-title{font-family:var(--font-disp);font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:0.6rem;line-height:1.25;}
+    .card-desc{font-size:0.87rem;color:var(--text-muted);line-height:1.65;margin-bottom:1.25rem;}
+    .card-chips{display:flex;flex-wrap:wrap;gap:0.4rem;}
+    .chip{padding:0.2rem 0.55rem;background:var(--surface);border:1px solid var(--border);border-radius:2px;font-size:0.67rem;font-family:var(--font-mono);color:var(--text-dim);}
+    .card-footer{padding:1rem 1.75rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .card-meta{font-family:var(--font-mono);font-size:0.7rem;color:var(--text-dim);}
+    .card-link{font-size:0.78rem;font-weight:600;color:var(--gold);display:flex;align-items:center;gap:0.3rem;transition:gap 0.2s;}
+    .card-link:hover{gap:0.6rem;}
+    .card-link-disabled{font-size:0.68rem;color:var(--text-dim);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;}
+    .conf-note{margin-top:2.5rem;padding:1.25rem 1.5rem;background:var(--bg3);border:1px solid var(--border);border-left:2px solid var(--gold-dim);border-radius:4px;display:flex;gap:1rem;align-items:flex-start;}
+    .conf-icon{font-size:1rem;flex-shrink:0;margin-top:0.1rem;opacity:0.6;}
+    .conf-note p{font-size:0.83rem;color:var(--text-muted);line-height:1.65;}
+    #expertise{padding:100px 0;}
+    .expertise-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+    .expertise-card{padding:2rem;background:var(--bg2);border:1px solid var(--border);border-radius:4px;transition:border-color 0.3s,background 0.3s;position:relative;overflow:hidden;}
+    .expertise-card::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--gold);transition:width 0.4s var(--ease);}
+    .expertise-card:hover{border-color:var(--gold-dim);background:var(--bg3);}
+    .expertise-card:hover::after{width:100%;}
+    .exp-card-icon{font-size:1.6rem;margin-bottom:1rem;display:block;}
+    .exp-card-title{font-family:var(--font-disp);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:0.6rem;}
+    .exp-card-text{font-size:0.84rem;color:var(--text-muted);line-height:1.65;}
+    #tools{padding:100px 0;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
+    .tools-group h4{font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);}
+    .tool-item{display:flex;align-items:center;gap:0.5rem;padding:0.45rem 0;border-bottom:1px solid var(--bg3);font-size:0.85rem;color:var(--text-muted);transition:color 0.2s;}
+    .tool-item:hover{color:var(--text);}
+    .tool-item::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--gold-dim);flex-shrink:0;}
+    .certs-section{margin-top:3rem;padding-top:3rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:1.5rem;}
+    .certs-group-label{font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem;}
+    .certs-row{display:flex;flex-wrap:wrap;gap:0.6rem;}
+    .cert-badge{display:inline-flex;align-items:center;gap:0.55rem;padding:0.5rem 1rem;background:var(--bg3);border:1px solid var(--border);border-radius:2px;font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);transition:border-color 0.2s,color 0.2s;white-space:nowrap;}
+    .cert-badge:hover{border-color:var(--gold-dim);color:var(--gold);}
+    .cert-badge svg{width:14px;height:14px;flex-shrink:0;opacity:0.7;fill:currentColor;}
+    .edu-badge{display:inline-flex;align-items:center;gap:0.55rem;padding:0.6rem 1.1rem;background:var(--bg3);border:1px solid var(--border);border-left:2px solid var(--gold-dim);border-radius:2px;font-size:0.78rem;font-family:var(--font-mono);color:var(--text-muted);transition:border-color 0.2s,color 0.2s;}
+    .edu-badge:hover{border-color:var(--gold-dim);color:var(--gold);}
+    .edu-badge svg{width:14px;height:14px;flex-shrink:0;opacity:0.6;fill:currentColor;}
+    .edu-badge strong{color:var(--text);font-weight:500;}
+    #contact{padding:100px 0 120px;}
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;}
+    .contact-intro p{font-size:1rem;color:var(--text-muted);line-height:1.8;margin-bottom:1.5rem;}
+    .contact-links{display:flex;flex-direction:column;gap:0.75rem;}
+    .contact-link{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:var(--bg2);border:1px solid var(--border);border-radius:4px;transition:border-color 0.2s,background 0.2s;}
+    .contact-link:hover{border-color:var(--gold-dim);background:var(--bg3);}
+    .cl-icon{width:36px;height:36px;border-radius:4px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .cl-label{font-size:0.7rem;font-family:var(--font-mono);color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.1rem;}
+    .cl-value{font-size:0.9rem;color:var(--text);font-weight:500;}
+    .contact-right{display:flex;flex-direction:column;gap:1.25rem;}
+    .contact-card{padding:2rem;background:var(--bg2);border:1px solid var(--border);border-radius:4px;border-top:2px solid var(--gold-dim);}
+    .contact-card h4{font-family:var(--font-disp);font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:0.6rem;}
+    .contact-card p{font-size:0.87rem;color:var(--text-muted);line-height:1.65;}
+    .contact-card .tag-row{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.75rem;}
+    footer{padding:2rem;border-top:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+    .footer-left{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-dim);}
+    .footer-links{display:flex;gap:1.5rem;}
+    .footer-links a{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-dim);transition:color 0.2s;}
+    .footer-links a:hover{color:var(--gold);}
+    .fade-up{opacity:1;transform:translateY(0);transition:opacity 0.65s var(--ease),transform 0.65s var(--ease);}
+    .fade-up.will-animate{opacity:0;transform:translateY(28px);}
+    .fade-up.visible{opacity:1;transform:translateY(0);}
+    .fade-up:nth-child(2){transition-delay:0.08s;}
+    .fade-up:nth-child(3){transition-delay:0.16s;}
+    .fade-up:nth-child(4){transition-delay:0.24s;}
+    .fade-up:nth-child(5){transition-delay:0.32s;}
+    .fade-up:nth-child(6){transition-delay:0.40s;}
+    @media(max-width:900px){.hero-inner{grid-template-columns:1fr;gap:3rem;}.hero-stats{grid-template-columns:repeat(4,1fr);}.stat-num{font-size:2rem;}.about-grid{grid-template-columns:1fr;gap:2.5rem;}.expertise-grid{grid-template-columns:1fr 1fr;}.tools-grid{grid-template-columns:1fr 1fr;}.contact-grid{grid-template-columns:1fr;gap:2.5rem;}.live-doc-card{flex-direction:column;align-items:flex-start;gap:1.25rem;}.live-doc-actions{flex-direction:row;}}
+    @media(max-width:640px){.nav-links{display:none;}.nav-links.open{display:flex;flex-direction:column;position:fixed;top:64px;left:0;right:0;background:var(--bg);border-bottom:1px solid var(--border);padding:1.5rem 2rem;gap:1.25rem;z-index:99;}.nav-toggle{display:flex;}.hero-stats{grid-template-columns:1fr 1fr;}.portfolio-grid{grid-template-columns:1fr;}.portfolio-card.span-full{grid-column:auto;}.expertise-grid{grid-template-columns:1fr;}.tools-grid{grid-template-columns:1fr 1fr;}footer{flex-direction:column;align-items:flex-start;}.live-doc-actions{flex-direction:column;width:100%;}.btn-view-pdf,.btn-download-pdf{justify-content:center;}}
+    @media(max-width:400px){.tools-grid{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
 
-<!-- ── NAV ──────────────────────────────────────────────────────────────── -->
 <nav>
   <a href="#hero" class="nav-logo">VP<span>.</span></a>
   <ul class="nav-links" id="navLinks">
@@ -1302,7 +230,6 @@
   </div>
 </nav>
 
-<!-- ── HERO ─────────────────────────────────────────────────────────────── -->
 <section id="hero">
   <div class="hero-grid-bg"></div>
   <div class="hero-glow"></div>
@@ -1310,17 +237,9 @@
   <div class="hero-inner">
     <div class="hero-left">
       <div class="hero-eyebrow">Technical Writer &amp; Documentation Specialist</div>
-      <h1 class="hero-name">
-        Viren
-        <em>Patel.</em>
-      </h1>
+      <h1 class="hero-name">Viren<em>Patel.</em></h1>
       <div class="hero-title">B.Eng · GMP · ISO · O&amp;M · SOP · Training</div>
-      <p class="hero-desc">
-        I hold a <strong>B.Eng. in Electrical Engineering</strong> and write documentation that
-        <strong>regulators approve</strong> and <strong>technicians actually use</strong> —
-        GMP-compliant SOPs, full O&amp;M manuals, and training programs for pharma,
-        manufacturing, and electrical systems.
-      </p>
+      <p class="hero-desc">I hold a <strong>B.Eng. in Electrical Engineering</strong> and write documentation that <strong>regulators approve</strong> and <strong>technicians actually use</strong> — GMP-compliant SOPs, full O&amp;M manuals, and training programs for pharma, manufacturing, and electrical systems.</p>
       <div class="hero-actions">
         <a href="#portfolio" class="btn-primary">View Work Samples ↓</a>
         <a href="#contact" class="btn-secondary">Get in Touch</a>
@@ -1337,100 +256,49 @@
         <span class="tag">21 CFR Part 211</span>
       </div>
     </div>
-
     <div class="hero-right">
       <div class="hero-stats">
-        <div class="stat-item">
-          <div class="stat-num">20+</div>
-          <div class="stat-label">SOPs &amp;<br>Manuals</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">5+</div>
-          <div class="stat-label">Years<br>Experience</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">3</div>
-          <div class="stat-label">Industry<br>Sectors</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">2</div>
-          <div class="stat-label">Countries<br>Worked</div>
-        </div>
+        <div class="stat-item"><div class="stat-num">20+</div><div class="stat-label">SOPs &amp;<br>Manuals</div></div>
+        <div class="stat-item"><div class="stat-num">5+</div><div class="stat-label">Years<br>Experience</div></div>
+        <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Industry<br>Sectors</div></div>
+        <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">Countries<br>Worked</div></div>
       </div>
       <div class="hero-avail">
         <div class="avail-dot"></div>
-        <div class="avail-text">
-          <strong>Open to opportunities</strong><br>
-          Intermediate &amp; Senior roles · Remote Canada &amp; USA
-        </div>
+        <div class="avail-text"><strong>Open to opportunities</strong><br>Intermediate &amp; Senior roles · Remote Canada &amp; USA</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── ABOUT ─────────────────────────────────────────────────────────────── -->
 <section id="about">
   <div class="section-inner">
     <div class="about-grid">
       <div class="about-text">
         <div class="section-label">About</div>
         <h2 class="section-title">Engineering knowledge<br>meets clear writing</h2>
-        <p>
-          I'm a Technical Writer with a <strong>B.Eng. in Electrical Engineering</strong> and hands-on documentation
-          experience across GMP-regulated pharma, ISO-certified manufacturing, industrial automation,
-          and electrical systems.
-        </p>
-        <p>
-          My engineering background isn't a footnote — it's what lets me sit with subject matter experts,
-          ask the right questions, and translate complex machine logic into documentation that
-          <strong>technicians actually use in the field.</strong>
-        </p>
-        <p>
-          I manage full <strong>draft → review → approval → submittal</strong> cycles, coordinate cross-functional
-          review, and track deliverables through MasterControl and SharePoint. I've also built and
-          delivered complete training programs — instructor-led, e-learning, and audio/visual —
-          and assessed post-training competency for technical and non-technical audiences.
-        </p>
-        <p>
-          I thrive in regulated environments where precision, version control, and compliance aren't optional.
-          Whether the audience is a maintenance technician on the floor or a QA director reviewing SOPs —
-          I write documentation that works for both.
-        </p>
+        <p>I'm a Technical Writer with a <strong>B.Eng. in Electrical Engineering</strong> and hands-on documentation experience across GMP-regulated pharma, ISO-certified manufacturing, industrial automation, and electrical systems.</p>
+        <p>My engineering background isn't a footnote — it's what lets me sit with subject matter experts, ask the right questions, and translate complex machine logic into documentation that <strong>technicians actually use in the field.</strong></p>
+        <p>I manage full <strong>draft → review → approval → submittal</strong> cycles, coordinate cross-functional review, and track deliverables through MasterControl and SharePoint. I've also built and delivered complete training programs — instructor-led, e-learning, and audio/visual — and assessed post-training competency for technical and non-technical audiences.</p>
+        <p>I thrive in regulated environments where precision, version control, and compliance aren't optional. Whether the audience is a maintenance technician on the floor or a QA director reviewing SOPs — I write documentation that works for both.</p>
       </div>
       <div class="about-right">
         <div class="about-block">
           <h4>Document Types</h4>
           <div class="about-block-tags">
-            <span class="about-tag">O&amp;M Manuals</span>
-            <span class="about-tag">SOPs</span>
-            <span class="about-tag">User Guides</span>
-            <span class="about-tag">Training Materials</span>
-            <span class="about-tag">Hazard Logs</span>
-            <span class="about-tag">Spare Parts Lists</span>
-            <span class="about-tag">CAD Drawings</span>
-            <span class="about-tag">HMI Content</span>
-            <span class="about-tag">Calibration Procedures</span>
-            <span class="about-tag">Validation Docs</span>
+            <span class="about-tag">O&amp;M Manuals</span><span class="about-tag">SOPs</span><span class="about-tag">User Guides</span><span class="about-tag">Training Materials</span><span class="about-tag">Hazard Logs</span><span class="about-tag">Spare Parts Lists</span><span class="about-tag">CAD Drawings</span><span class="about-tag">HMI Content</span><span class="about-tag">Calibration Procedures</span><span class="about-tag">Validation Docs</span>
           </div>
         </div>
         <div class="about-block">
           <h4>Industries</h4>
           <div class="about-block-tags">
-            <span class="about-tag">Pharma / GMP</span>
-            <span class="about-tag">Industrial Automation</span>
-            <span class="about-tag">Electrical Systems</span>
-            <span class="about-tag">Manufacturing</span>
+            <span class="about-tag">Pharma / GMP</span><span class="about-tag">Industrial Automation</span><span class="about-tag">Electrical Systems</span><span class="about-tag">Manufacturing</span>
           </div>
         </div>
         <div class="about-block">
           <h4>Standards &amp; Compliance</h4>
           <div class="about-block-tags">
-            <span class="about-tag">GMP</span>
-            <span class="about-tag">ISO 9001</span>
-            <span class="about-tag">21 CFR Part 211</span>
-            <span class="about-tag">Hazard Log</span>
-            <span class="about-tag">LOTO</span>
-            <span class="about-tag">WHMIS</span>
+            <span class="about-tag">GMP</span><span class="about-tag">ISO 9001</span><span class="about-tag">21 CFR Part 211</span><span class="about-tag">Hazard Log</span><span class="about-tag">LOTO</span><span class="about-tag">WHMIS</span>
           </div>
         </div>
       </div>
@@ -1438,85 +306,53 @@
   </div>
 </section>
 
-<!-- ── EXPERIENCE ─────────────────────────────────────────────────────────── -->
 <section id="experience">
   <div class="section-inner">
     <div class="section-label">Experience</div>
     <h2 class="section-title">Professional history</h2>
     <p class="section-sub">Accurate, compliant documentation delivered on time — across two countries and three industries.</p>
-
     <div class="exp-list">
-
       <div class="exp-item fade-up">
         <div class="exp-header">
-          <div>
-            <div class="exp-role">Technical Writer</div>
-            <div class="exp-company">Biovectra</div>
-            <div class="exp-location">Windsor, NS, Canada</div>
-          </div>
-          <div class="exp-dates">
-            <div class="exp-date-range">Jul 2024 — Present</div>
-            <span class="exp-badge">Current</span>
-          </div>
+          <div><div class="exp-role">Technical Writer</div><div class="exp-company">Biovectra</div><div class="exp-location">Windsor, NS, Canada</div></div>
+          <div class="exp-dates"><div class="exp-date-range">Jul 2024 — Present</div><span class="exp-badge">Current</span></div>
         </div>
-        <div class="exp-body">
-          <ul>
-            <li>Authored and maintained <strong>20+ GMP-compliant SOPs, O&amp;M manuals, and user guides</strong> for complex industrial equipment, ensuring ISO and GMP compliance throughout all documentation.</li>
-            <li>Served as <strong>Project Liaison</strong> across Engineering, QA, Manufacturing, and Customer Service — maintaining daily interfaces with Project Managers and customers to align documentation with project goals.</li>
-            <li>Managed end-to-end documentation lifecycle for <strong>8+ concurrent projects</strong> in MasterControl and SharePoint, consistently meeting delivery deadlines across all projects.</li>
-            <li>Designed and delivered <strong>blended training programs</strong> (instructor-led, e-learning, and audio/visual) for technical staff; assessed post-training competency across all cohorts.</li>
-            <li>Managed concurrent documentation projects via Monday.com; produced weekly status reports on deliverables, schedules, and resource allocation to management.</li>
-            <li>Provided technical support to Customer Service teams on documentation queries, operational procedures, and equipment onboarding.</li>
-          </ul>
-        </div>
+        <div class="exp-body"><ul>
+          <li>Authored and maintained <strong>20+ GMP-compliant SOPs, O&amp;M manuals, and user guides</strong> for complex industrial equipment, ensuring ISO and GMP compliance throughout all documentation.</li>
+          <li>Served as <strong>Project Liaison</strong> across Engineering, QA, Manufacturing, and Customer Service — maintaining daily interfaces with Project Managers and customers to align documentation with project goals.</li>
+          <li>Managed end-to-end documentation lifecycle for <strong>8+ concurrent projects</strong> in MasterControl and SharePoint, consistently meeting delivery deadlines across all projects.</li>
+          <li>Designed and delivered <strong>blended training programs</strong> (instructor-led, e-learning, and audio/visual) for technical staff; assessed post-training competency across all cohorts.</li>
+          <li>Managed concurrent documentation projects via Monday.com; produced weekly status reports on deliverables, schedules, and resource allocation to management.</li>
+          <li>Provided technical support to Customer Service teams on documentation queries, operational procedures, and equipment onboarding.</li>
+        </ul></div>
       </div>
-
       <div class="exp-item fade-up">
         <div class="exp-header">
-          <div>
-            <div class="exp-role">Technical Document Writer</div>
-            <div class="exp-company">ACRP Ltd</div>
-            <div class="exp-location">Kitchener, ON, Canada</div>
-          </div>
-          <div class="exp-dates">
-            <div class="exp-date-range">May 2023 — May 2024</div>
-          </div>
+          <div><div class="exp-role">Technical Document Writer</div><div class="exp-company">ACRP Ltd</div><div class="exp-location">Kitchener, ON, Canada</div></div>
+          <div class="exp-dates"><div class="exp-date-range">May 2023 — May 2024</div></div>
         </div>
-        <div class="exp-body">
-          <ul>
-            <li>Developed <strong>full-suite O&amp;M manuals</strong> for complex industrial machines — documenting preventive and corrective maintenance procedures, spare parts lists, pneumatic diagrams, and HMI screen content.</li>
-            <li>Created <strong>3D SolidWorks models and technical illustrations</strong> for major clients including <strong>Magna and Tesla</strong>, adhering to industry standards and client specifications.</li>
-            <li>Collated source information from Engineering, service teams, and suppliers; circulated drafts following quality procedures and incorporated internal and customer review comments.</li>
-            <li>Collaborated with safety groups to ensure <strong>hazard log warnings and cautions</strong> were accurately documented in all relevant manuals and training materials.</li>
-            <li>Managed simultaneous manual projects under tight deadlines, maintaining attention to detail and consistent technical writing conventions throughout all deliverables.</li>
-          </ul>
-        </div>
+        <div class="exp-body"><ul>
+          <li>Developed <strong>full-suite O&amp;M manuals</strong> for complex industrial machines — documenting preventive and corrective maintenance procedures, spare parts lists, pneumatic diagrams, and HMI screen content.</li>
+          <li>Created <strong>3D SolidWorks models and technical illustrations</strong> for major clients including <strong>Magna and Tesla</strong>, adhering to industry standards and client specifications.</li>
+          <li>Collated source information from Engineering, service teams, and suppliers; circulated drafts following quality procedures and incorporated internal and customer review comments.</li>
+          <li>Collaborated with safety groups to ensure <strong>hazard log warnings and cautions</strong> were accurately documented in all relevant manuals and training materials.</li>
+          <li>Managed simultaneous manual projects under tight deadlines, maintaining attention to detail and consistent technical writing conventions throughout all deliverables.</li>
+        </ul></div>
       </div>
-
       <div class="exp-item fade-up">
         <div class="exp-header">
-          <div>
-            <div class="exp-role">Electrical Design &amp; Documentation Engineer</div>
-            <div class="exp-company">Rajesh Electrical</div>
-            <div class="exp-location">Unjha, Gujarat, India</div>
-          </div>
-          <div class="exp-dates">
-            <div class="exp-date-range">Jun 2019 — Jun 2022</div>
-          </div>
+          <div><div class="exp-role">Electrical Design &amp; Documentation Engineer</div><div class="exp-company">Rajesh Electrical</div><div class="exp-location">Unjha, Gujarat, India</div></div>
+          <div class="exp-dates"><div class="exp-date-range">Jun 2019 — Jun 2022</div></div>
         </div>
-        <div class="exp-body">
-          <ul>
-            <li>Produced documentation packages including <strong>CAD drawings, preventive and corrective maintenance procedures, and operating manuals</strong> for distributed electrical systems.</li>
-            <li>Collaborated with subject matter experts, project managers, and clients to gather technical information and produce clear, accurate documentation for both technical and non-technical audiences.</li>
-          </ul>
-        </div>
+        <div class="exp-body"><ul>
+          <li>Produced documentation packages including <strong>CAD drawings, preventive and corrective maintenance procedures, and operating manuals</strong> for distributed electrical systems.</li>
+          <li>Collaborated with subject matter experts, project managers, and clients to gather technical information and produce clear, accurate documentation for both technical and non-technical audiences.</li>
+        </ul></div>
       </div>
-
     </div>
   </div>
 </section>
 
-<!-- ── PORTFOLIO ──────────────────────────────────────────────────────────── -->
 <section id="portfolio">
   <div class="section-inner">
     <div class="section-label">Portfolio</div>
@@ -1530,14 +366,7 @@
         <div class="live-doc-card">
           <div class="live-doc-left">
             <div class="live-doc-icon">
-              <div class="dl h"></div>
-              <div class="dl m"></div>
-              <div class="dl"></div>
-              <div class="dl s"></div>
-              <div class="dl"></div>
-              <div class="dl m"></div>
-              <div class="dl s"></div>
-              <div class="dl"></div>
+              <div class="dl h"></div><div class="dl m"></div><div class="dl"></div><div class="dl s"></div><div class="dl"></div><div class="dl m"></div><div class="dl s"></div><div class="dl"></div>
             </div>
             <div class="live-doc-info">
               <div class="live-doc-status">Live Document</div>
@@ -1546,14 +375,8 @@
             </div>
           </div>
           <div class="live-doc-actions">
-            <a href="docs/ball-valve-manual.pdf"
-               target="_blank" rel="noopener" class="btn-view-pdf">
-              ↗ Open PDF
-            </a>
-            <a href="docs/ball-valve-manual.pdf"
-               download class="btn-download-pdf">
-              ↓ Download
-            </a>
+            <a href="docs/ball-valve-manual.pdf" target="_blank" rel="noopener" class="btn-view-pdf">&#8599; Open PDF</a>
+            <a href="docs/ball-valve-manual.pdf" download class="btn-download-pdf">&darr; Download</a>
           </div>
         </div>
         <div class="card-body">
@@ -1561,12 +384,7 @@
           <div class="card-title">Ball Valve Inspection Manual (v1.0)</div>
           <p class="card-desc">GMP-style inspection procedure for the Triac Controls Series 77 Sanitary Ball Valve. Includes PPE &amp; safety requirements, LOTO references, 3D SolidWorks part illustrations, materials list, step-by-step disassembly, internal inspection criteria, reassembly torque specs, and a documentation/reporting section.</p>
           <div class="card-chips">
-            <span class="chip">GMP Formatting</span>
-            <span class="chip">3D SolidWorks</span>
-            <span class="chip">Safety &amp; PPE</span>
-            <span class="chip">LOTO</span>
-            <span class="chip">Version Control</span>
-            <span class="chip">8 pages</span>
+            <span class="chip">GMP Formatting</span><span class="chip">3D SolidWorks</span><span class="chip">Safety &amp; PPE</span><span class="chip">LOTO</span><span class="chip">Version Control</span><span class="chip">8 pages</span>
           </div>
         </div>
       </div>
@@ -1576,14 +394,7 @@
         <div class="live-doc-card">
           <div class="live-doc-left">
             <div class="live-doc-icon">
-              <div class="dl h"></div>
-              <div class="dl m"></div>
-              <div class="dl"></div>
-              <div class="dl s"></div>
-              <div class="dl"></div>
-              <div class="dl m"></div>
-              <div class="dl s"></div>
-              <div class="dl"></div>
+              <div class="dl h"></div><div class="dl m"></div><div class="dl"></div><div class="dl s"></div><div class="dl"></div><div class="dl m"></div><div class="dl s"></div><div class="dl"></div>
             </div>
             <div class="live-doc-info">
               <div class="live-doc-status">Live Document</div>
@@ -1592,14 +403,8 @@
             </div>
           </div>
           <div class="live-doc-actions">
-            <a href="docs/CSTPD0131_GasWorks_Admin_Training.pdf"
-               target="_blank" rel="noopener" class="btn-view-pdf">
-              ↗ Open PDF
-            </a>
-            <a href="docs/CSTPD0131_GasWorks_Admin_Training.pdf"
-               download class="btn-download-pdf">
-              ↓ Download
-            </a>
+            <a href="docs/CSTPD0131_GasWorks_Admin_Training.pdf" target="_blank" rel="noopener" class="btn-view-pdf">&#8599; Open PDF</a>
+            <a href="docs/CSTPD0131_GasWorks_Admin_Training.pdf" download class="btn-download-pdf">&darr; Download</a>
           </div>
         </div>
         <div class="card-body">
@@ -1607,35 +412,50 @@
           <div class="card-title">Administrator Training for GasWorks Software (Windsor)</div>
           <p class="card-desc">GMP-compliant administrator training SOP for the GasWorks software platform (Thermo Fisher Scientific) used with the Prima BT Bench Top Process Mass Spectrometer. Covers 21 CFR Part 11 compliance setup, administrator account management, user and group permissions, system configuration, data backup and recovery procedures, and full audit trail review using the Audit File Viewer.</p>
           <div class="card-chips">
-            <span class="chip">21 CFR Part 11</span>
-            <span class="chip">GMP Compliant</span>
-            <span class="chip">User Management</span>
-            <span class="chip">Audit Trail</span>
-            <span class="chip">Data Backup &amp; Recovery</span>
-            <span class="chip">Pharma / Biovectra</span>
-            <span class="chip">25 pages</span>
+            <span class="chip">21 CFR Part 11</span><span class="chip">GMP Compliant</span><span class="chip">User Management</span><span class="chip">Audit Trail</span><span class="chip">Data Backup &amp; Recovery</span><span class="chip">Pharma / Biovectra</span><span class="chip">25 pages</span>
           </div>
         </div>
       </div>
 
-      <!-- SAMPLE 3: SOP — coming soon -->
-      <div class="portfolio-card fade-up">
-        <div class="card-preview">
-          <div class="coming-preview">
-            <div class="coming-icon">📋</div>
-            <div class="coming-text">Coming Soon</div>
+      <!-- SAMPLE 3: 7125 Process Plant Equipment Layout & Doc Flow — NEW -->
+      <div class="portfolio-card span-full fade-up">
+        <div class="live-doc-card">
+          <div class="live-doc-left">
+            <div class="live-doc-icon">
+              <div class="dl h"></div><div class="dl m"></div><div class="dl"></div><div class="dl s"></div><div class="dl"></div><div class="dl m"></div><div class="dl s"></div><div class="dl"></div>
+            </div>
+            <div class="live-doc-info">
+              <div class="live-doc-status">Live Document</div>
+              <div class="live-doc-name">7125 Process Plant Equipment Uses Layout &amp; Doc Flow</div>
+              <div class="live-doc-version">CSTPD0125 &middot; 2 pages &middot; PDF</div>
+            </div>
+          </div>
+          <div class="live-doc-actions">
+            <a href="docs/7125%20Process%20Plant%20Equipment%20Uses%20Layout%20%26%20Doc%20Flow.pdf" target="_blank" rel="noopener" class="btn-view-pdf">&#8599; Open PDF</a>
+            <a href="docs/7125%20Process%20Plant%20Equipment%20Uses%20Layout%20%26%20Doc%20Flow.pdf" download class="btn-download-pdf">&darr; Download</a>
           </div>
         </div>
         <div class="card-body">
-          <div class="card-type">Standard Operating Procedure · Sample #3</div>
+          <div class="card-type">Process Plant Diagram &amp; Document Flow · Sample #3</div>
+          <div class="card-title">7125 Process Plant Equipment Uses Layout &amp; Doc Flow</div>
+          <p class="card-desc">Full equipment layout and document flow diagram for a GMP bioprocess plant (Biovectra 7125). Covers the complete horizontal process flow from upstream fermentation (seed flask, intermediate and main fermenters, CDOS/NDOS feed tanks) through midstream harvest and separation (centrifuge train M-W1T01/V01/X01, R-W0301 harvest tank, clarification filter, sterile filters) to downstream purification and fill (CEX chromatography column, UF/DF concentration skid, final packaging). Equipment rendered as plan-view cylindrical symbols with colour-coded zone boundaries and BPR/MNWI document flow references throughout.</p>
+          <div class="card-chips">
+            <span class="chip">GMP / Pharma</span><span class="chip">Process Diagrams</span><span class="chip">MS Visio</span><span class="chip">Equipment Layout</span><span class="chip">Document Flow</span><span class="chip">Biovectra</span><span class="chip">2 pages</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAMPLE 4: SOP — coming soon -->
+      <div class="portfolio-card fade-up">
+        <div class="card-preview">
+          <div class="coming-preview"><div class="coming-icon">📋</div><div class="coming-text">Coming Soon</div></div>
+        </div>
+        <div class="card-body">
+          <div class="card-type">Standard Operating Procedure · Sample #4</div>
           <div class="card-title">Calibration of Analytical Balances (SOP-QC-0042)</div>
           <p class="card-desc">GMP-compliant SOP for analytical balance calibration in pharma environments. Includes approval signatures, revision history, full procedure with acceptance criteria, deviation management workflow, and calibration log form.</p>
           <div class="card-chips">
-            <span class="chip">21 CFR Part 211</span>
-            <span class="chip">ISO 8655-6</span>
-            <span class="chip">Deviation Mgmt</span>
-            <span class="chip">Revision Control</span>
-            <span class="chip">Pharma / GMP</span>
+            <span class="chip">21 CFR Part 211</span><span class="chip">ISO 8655-6</span><span class="chip">Deviation Mgmt</span><span class="chip">Revision Control</span><span class="chip">Pharma / GMP</span>
           </div>
         </div>
         <div class="card-footer">
@@ -1644,22 +464,17 @@
         </div>
       </div>
 
-      <!-- SAMPLE 4: O&M Excerpt -->
+      <!-- SAMPLE 5: O&M Excerpt -->
       <div class="portfolio-card fade-up">
         <div class="card-preview">
-          <div class="coming-preview">
-            <div class="coming-icon">🔧</div>
-            <div class="coming-text">Coming Soon</div>
-          </div>
+          <div class="coming-preview"><div class="coming-icon">🔧</div><div class="coming-text">Coming Soon</div></div>
         </div>
         <div class="card-body">
-          <div class="card-type">O&amp;M Manual Excerpt · Sample #4</div>
+          <div class="card-type">O&amp;M Manual Excerpt · Sample #5</div>
           <div class="card-title">Operations &amp; Maintenance Manual</div>
           <p class="card-desc">Full O&amp;M manual excerpt with preventive maintenance schedule, corrective maintenance procedures, spare parts list, and pneumatic diagrams. Industrial automation sector.</p>
           <div class="card-chips">
-            <span class="chip">Preventive Maint.</span>
-            <span class="chip">Spare Parts</span>
-            <span class="chip">Pneumatic Diagrams</span>
+            <span class="chip">Preventive Maint.</span><span class="chip">Spare Parts</span><span class="chip">Pneumatic Diagrams</span>
           </div>
         </div>
         <div class="card-footer">
@@ -1668,22 +483,17 @@
         </div>
       </div>
 
-      <!-- SAMPLE 5: Training Material -->
+      <!-- SAMPLE 6: Training Material -->
       <div class="portfolio-card fade-up">
         <div class="card-preview">
-          <div class="coming-preview">
-            <div class="coming-icon">🎓</div>
-            <div class="coming-text">Coming Soon</div>
-          </div>
+          <div class="coming-preview"><div class="coming-icon">🎓</div><div class="coming-text">Coming Soon</div></div>
         </div>
         <div class="card-body">
-          <div class="card-type">Training Material · Sample #5</div>
+          <div class="card-type">Training Material · Sample #6</div>
           <div class="card-title">Instructor-Led Training Program</div>
           <p class="card-desc">Complete training package including course outline, slide deck, facilitator guide, and post-training competency assessment. Demonstrates instructional design approach for technical audiences.</p>
           <div class="card-chips">
-            <span class="chip">ILT</span>
-            <span class="chip">e-Learning</span>
-            <span class="chip">Competency Assessment</span>
+            <span class="chip">ILT</span><span class="chip">e-Learning</span><span class="chip">Competency Assessment</span>
           </div>
         </div>
         <div class="card-footer">
@@ -1701,121 +511,52 @@
   </div>
 </section>
 
-<!-- ── EXPERTISE ──────────────────────────────────────────────────────────── -->
 <section id="expertise">
   <div class="section-inner">
     <div class="section-label">Expertise</div>
     <h2 class="section-title">What I write</h2>
     <p class="section-sub">Every document type is rooted in direct collaboration with engineers, operators, and safety teams — not just reformatting source material.</p>
-
     <div class="expertise-grid">
-      <div class="expertise-card fade-up">
-        <span class="exp-card-icon">📋</span>
-        <div class="exp-card-title">Operations &amp; Maintenance Manuals</div>
-        <p class="exp-card-text">Full-suite O&amp;M documentation covering procedures, preventive and corrective maintenance, spare parts lists, pneumatic diagrams, and safety notices. Built from direct SME collaboration.</p>
-      </div>
-      <div class="expertise-card fade-up">
-        <span class="exp-card-icon">📝</span>
-        <div class="exp-card-title">Standard Operating Procedures</div>
-        <p class="exp-card-text">GMP- and ISO-compliant SOPs developed from source data and maintained through full lifecycle revision control. Audit-ready formatting with approval workflows and deviation management.</p>
-      </div>
-      <div class="expertise-card fade-up">
-        <span class="exp-card-icon">🎓</span>
-        <div class="exp-card-title">Training Programs</div>
-        <p class="exp-card-text">Instructor-led, e-learning, and audio/visual training materials with post-training competency assessment. Designed for both technical floor staff and non-technical audiences.</p>
-      </div>
-      <div class="expertise-card fade-up">
-        <span class="exp-card-icon">⚠️</span>
-        <div class="exp-card-title">Hazard Log Documentation</div>
-        <p class="exp-card-text">Safety-critical warnings and cautions documented per regulatory requirements in close collaboration with dedicated safety groups and engineering teams.</p>
-      </div>
-      <div class="expertise-card fade-up">
-        <span class="exp-card-icon">🔧</span>
-        <div class="exp-card-title">Technical Illustrations</div>
-        <p class="exp-card-text">3D SolidWorks models, pneumatic diagrams, CAD drawings, and HMI screen documentation. Visual documentation that supports complex assembly, maintenance, and operational procedures.</p>
-      </div>
-      <div class="expertise-card fade-up">
-        <span class="exp-card-icon">📊</span>
-        <div class="exp-card-title">User Guides &amp; Quick Refs</div>
-        <p class="exp-card-text">Accessible guides turning complex workflows into scannable, field-ready documentation. Written for the person using the equipment — not the engineer who designed it.</p>
-      </div>
+      <div class="expertise-card fade-up"><span class="exp-card-icon">📋</span><div class="exp-card-title">Operations &amp; Maintenance Manuals</div><p class="exp-card-text">Full-suite O&amp;M documentation covering procedures, preventive and corrective maintenance, spare parts lists, pneumatic diagrams, and safety notices. Built from direct SME collaboration.</p></div>
+      <div class="expertise-card fade-up"><span class="exp-card-icon">📝</span><div class="exp-card-title">Standard Operating Procedures</div><p class="exp-card-text">GMP- and ISO-compliant SOPs developed from source data and maintained through full lifecycle revision control. Audit-ready formatting with approval workflows and deviation management.</p></div>
+      <div class="expertise-card fade-up"><span class="exp-card-icon">🎓</span><div class="exp-card-title">Training Programs</div><p class="exp-card-text">Instructor-led, e-learning, and audio/visual training materials with post-training competency assessment. Designed for both technical floor staff and non-technical audiences.</p></div>
+      <div class="expertise-card fade-up"><span class="exp-card-icon">⚠️</span><div class="exp-card-title">Hazard Log Documentation</div><p class="exp-card-text">Safety-critical warnings and cautions documented per regulatory requirements in close collaboration with dedicated safety groups and engineering teams.</p></div>
+      <div class="expertise-card fade-up"><span class="exp-card-icon">🔧</span><div class="exp-card-title">Technical Illustrations</div><p class="exp-card-text">3D SolidWorks models, pneumatic diagrams, CAD drawings, and HMI screen documentation. Visual documentation that supports complex assembly, maintenance, and operational procedures.</p></div>
+      <div class="expertise-card fade-up"><span class="exp-card-icon">📊</span><div class="exp-card-title">User Guides &amp; Quick Refs</div><p class="exp-card-text">Accessible guides turning complex workflows into scannable, field-ready documentation. Written for the person using the equipment — not the engineer who designed it.</p></div>
     </div>
   </div>
 </section>
 
-<!-- ── TOOLS ──────────────────────────────────────────────────────────────── -->
 <section id="tools">
   <div class="section-inner">
     <div class="section-label">Tools &amp; Skills</div>
     <h2 class="section-title">My toolbox</h2>
     <p class="section-sub">Proficient across the full documentation and design stack — from authoring and version control to CAD illustration and project management.</p>
-
     <div class="tools-grid">
-      <div class="tools-group">
-        <h4>Authoring &amp; Publishing</h4>
-        <div class="tool-item">Adobe FrameMaker</div>
-        <div class="tool-item">MS Word</div>
-        <div class="tool-item">Adobe InDesign</div>
-        <div class="tool-item">Adobe Acrobat</div>
-      </div>
-      <div class="tools-group">
-        <h4>Document Control &amp; PM</h4>
-        <div class="tool-item">MasterControl</div>
-        <div class="tool-item">SharePoint</div>
-        <div class="tool-item">JIRA</div>
-        <div class="tool-item">Monday.com</div>
-      </div>
-      <div class="tools-group">
-        <h4>Design &amp; CAD</h4>
-        <div class="tool-item">SolidWorks (3D)</div>
-        <div class="tool-item">AutoCAD</div>
-        <div class="tool-item">Adobe Illustrator</div>
-        <div class="tool-item">MS Visio</div>
-      </div>
-      <div class="tools-group">
-        <h4>Technical</h4>
-        <div class="tool-item">Python</div>
-        <div class="tool-item">C / C++</div>
-        <div class="tool-item">MATLAB</div>
-        <div class="tool-item">Git</div>
-      </div>
+      <div class="tools-group"><h4>Authoring &amp; Publishing</h4><div class="tool-item">Adobe FrameMaker</div><div class="tool-item">MS Word</div><div class="tool-item">Adobe InDesign</div><div class="tool-item">Adobe Acrobat</div></div>
+      <div class="tools-group"><h4>Document Control &amp; PM</h4><div class="tool-item">MasterControl</div><div class="tool-item">SharePoint</div><div class="tool-item">JIRA</div><div class="tool-item">Monday.com</div></div>
+      <div class="tools-group"><h4>Design &amp; CAD</h4><div class="tool-item">SolidWorks (3D)</div><div class="tool-item">AutoCAD</div><div class="tool-item">Adobe Illustrator</div><div class="tool-item">MS Visio</div></div>
+      <div class="tools-group"><h4>Technical</h4><div class="tool-item">Python</div><div class="tool-item">C / C++</div><div class="tool-item">MATLAB</div><div class="tool-item">Git</div></div>
     </div>
-
     <div class="certs-section">
-
       <div>
         <div class="certs-group-label">Certifications &amp; Training</div>
         <div class="certs-row">
-          <span class="cert-badge">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-            Adobe FrameMaker L1 Certified
-          </span>
-          <span class="cert-badge">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.5 3.5L18 2L16.5 3.5L15 2L13.5 3.5L12 2L10.5 3.5L9 2L7.5 3.5L6 2V16H3V19C3 20.66 4.34 22 6 22H18C19.66 22 21 20.66 21 19V2L19.5 3.5ZM19 19C19 19.55 18.55 20 18 20H6C5.45 20 5 19.55 5 19V18H19V19ZM19 16H8V4H19V16Z"/></svg>
-            WHMIS Certified
-          </span>
+          <span class="cert-badge"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>Adobe FrameMaker L1 Certified</span>
+          <span class="cert-badge"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.5 3.5L18 2L16.5 3.5L15 2L13.5 3.5L12 2L10.5 3.5L9 2L7.5 3.5L6 2V16H3V19C3 20.66 4.34 22 6 22H18C19.66 22 21 20.66 21 19V2L19.5 3.5ZM19 19C19 19.55 18.55 20 18 20H6C5.45 20 5 19.55 5 19V18H19V19ZM19 16H8V4H19V16Z"/></svg>WHMIS Certified</span>
         </div>
       </div>
-
       <div>
         <div class="certs-group-label">Education</div>
         <div class="certs-row">
-          <span class="edu-badge">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18ZM12 3L1 9L12 15L21 10.09V17H23V9L12 3Z"/></svg>
-            <span><strong>Embedded Systems Dev</strong> · Conestoga College · GPA 3.67 / 4.0</span>
-          </span>
-          <span class="edu-badge">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18ZM12 3L1 9L12 15L21 10.09V17H23V9L12 3Z"/></svg>
-            <span><strong>B.Eng. Electrical Engineering</strong> · Adani University · CGPA 8.18 / 10</span>
-          </span>
+          <span class="edu-badge"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18ZM12 3L1 9L12 15L21 10.09V17H23V9L12 3Z"/></svg><span><strong>Embedded Systems Dev</strong> · Conestoga College · GPA 3.67 / 4.0</span></span>
+          <span class="edu-badge"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18ZM12 3L1 9L12 15L21 10.09V17H23V9L12 3Z"/></svg><span><strong>B.Eng. Electrical Engineering</strong> · Adani University · CGPA 8.18 / 10</span></span>
         </div>
       </div>
-
     </div>
   </div>
 </section>
 
-<!-- ── CONTACT ────────────────────────────────────────────────────────────── -->
 <section id="contact">
   <div class="section-inner">
     <div class="contact-grid">
@@ -1824,115 +565,49 @@
         <h2 class="section-title">Let's work<br>together</h2>
         <p>Seeking intermediate to senior technical writer roles in regulated industries — pharma, industrial manufacturing, electrical systems, rail &amp; transportation, and SaaS. Open to remote across Canada and the USA.</p>
         <p>Redacted or sanitized client documentation samples are available upon request during the hiring process.</p>
-
         <div class="contact-links">
-          <a href="/cdn-cgi/l/email-protection#3f4f5e4b5a5349564d5a510f0d0b7f58525e5653115c5052" class="contact-link">
-            <div class="cl-icon">✉️</div>
-            <div>
-              <div class="cl-label">Email</div>
-              <div class="cl-value"><span class="__cf_email__" data-cfemail="2c5c4d5849405a455e49421c1e186c4b414d4540024f4341">[email&#160;protected]</span></div>
-            </div>
-          </a>
-          <a href="tel:+15197318310" class="contact-link">
-            <div class="cl-icon">📞</div>
-            <div>
-              <div class="cl-label">Phone</div>
-              <div class="cl-value">519-731-8310</div>
-            </div>
-          </a>
-          <a href="https://linkedin.com/in/virenpatel024" target="_blank" rel="noopener" class="contact-link">
-            <div class="cl-icon">🔗</div>
-            <div>
-              <div class="cl-label">LinkedIn</div>
-              <div class="cl-value">linkedin.com/in/virenpatel024</div>
-            </div>
-          </a>
-          <a href="https://github.com/viren024" target="_blank" rel="noopener" class="contact-link">
-            <div class="cl-icon">⌨️</div>
-            <div>
-              <div class="cl-label">GitHub</div>
-              <div class="cl-value">github.com/viren024</div>
-            </div>
-          </a>
+          <a href="mailto:virenpatel024@gmail.com" class="contact-link"><div class="cl-icon">✉️</div><div><div class="cl-label">Email</div><div class="cl-value">virenpatel024@gmail.com</div></div></a>
+          <a href="tel:+15197318310" class="contact-link"><div class="cl-icon">📞</div><div><div class="cl-label">Phone</div><div class="cl-value">519-731-8310</div></div></a>
+          <a href="https://linkedin.com/in/virenpatel024" target="_blank" rel="noopener" class="contact-link"><div class="cl-icon">🔗</div><div><div class="cl-label">LinkedIn</div><div class="cl-value">linkedin.com/in/virenpatel024</div></div></a>
+          <a href="https://github.com/viren024" target="_blank" rel="noopener" class="contact-link"><div class="cl-icon">⌨️</div><div><div class="cl-label">GitHub</div><div class="cl-value">github.com/viren024</div></div></a>
         </div>
       </div>
-
       <div class="contact-right">
-        <div class="contact-card">
-          <h4>What I'm looking for</h4>
-          <p>Intermediate or Senior Technical Writer roles in regulated industries. I bring engineering depth, GMP/ISO compliance experience, and the ability to own a documentation program end-to-end.</p>
-          <div class="tag-row">
-            <span class="tag">Remote · Canada</span>
-            <span class="tag">Remote · USA</span>
-            <span class="tag">Intermediate</span>
-            <span class="tag">Senior</span>
-          </div>
-        </div>
-        <div class="contact-card">
-          <h4>Target industries</h4>
-          <p>Pharma &amp; MedTech, Industrial Manufacturing, Electrical Systems, Rail &amp; Transportation, and Software &amp; SaaS — any environment where documentation precision directly affects safety, compliance, or product quality.</p>
-          <div class="tag-row">
-            <span class="tag">Pharma / GMP</span>
-            <span class="tag">Industrial</span>
-            <span class="tag">Electrical</span>
-            <span class="tag">Rail / Transport</span>
-            <span class="tag">SaaS</span>
-          </div>
-        </div>
-        <div class="contact-card">
-          <h4>My process</h4>
-          <p>I follow a structured <strong>Gather → Draft → Review → Deliver</strong> cycle. I interface directly with SMEs, circulate structured review drafts, track comments in version control, and manage the approval workflow through to final submittal — on time, every time.</p>
-        </div>
+        <div class="contact-card"><h4>What I'm looking for</h4><p>Intermediate or Senior Technical Writer roles in regulated industries. I bring engineering depth, GMP/ISO compliance experience, and the ability to own a documentation program end-to-end.</p><div class="tag-row"><span class="tag">Remote · Canada</span><span class="tag">Remote · USA</span><span class="tag">Intermediate</span><span class="tag">Senior</span></div></div>
+        <div class="contact-card"><h4>Target industries</h4><p>Pharma &amp; MedTech, Industrial Manufacturing, Electrical Systems, Rail &amp; Transportation, and Software &amp; SaaS — any environment where documentation precision directly affects safety, compliance, or product quality.</p><div class="tag-row"><span class="tag">Pharma / GMP</span><span class="tag">Industrial</span><span class="tag">Electrical</span><span class="tag">Rail / Transport</span><span class="tag">SaaS</span></div></div>
+        <div class="contact-card"><h4>My process</h4><p>I follow a structured <strong>Gather → Draft → Review → Deliver</strong> cycle. I interface directly with SMEs, circulate structured review drafts, track comments in version control, and manage the approval workflow through to final submittal — on time, every time.</p></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
 <footer>
   <div class="footer-left">© 2025 Viren Patel · Technical Writer &amp; Documentation Specialist · Bedford, NS, Canada</div>
   <div class="footer-links">
-    <a href="/cdn-cgi/l/email-protection#7909180d1c150f100b1c17494b4d391e14181015571a1614">Email</a>
+    <a href="mailto:virenpatel024@gmail.com">Email</a>
     <a href="https://linkedin.com/in/virenpatel024" target="_blank">LinkedIn</a>
     <a href="https://github.com/viren024" target="_blank">GitHub</a>
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  // ── NAV TOGGLE (mobile) ──────────────────────────────────────────────────
+<script>
   const toggle = document.getElementById('navToggle');
   const links  = document.getElementById('navLinks');
-  toggle.addEventListener('click', () => {
-    links.classList.toggle('open');
-  });
-
-  links.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => links.classList.remove('open'));
-  });
-
-  // ── NAV SCROLL BORDER ────────────────────────────────────────────────────
+  toggle.addEventListener('click', () => { links.classList.toggle('open'); });
+  links.querySelectorAll('a').forEach(a => { a.addEventListener('click', () => links.classList.remove('open')); });
   const nav = document.querySelector('nav');
-  window.addEventListener('scroll', () => {
-    nav.style.borderBottomColor = window.scrollY > 20 ? 'var(--border)' : 'transparent';
-  }, { passive: true });
-
-  // ── INTERSECTION OBSERVER (fade-up) ─────────────────────────────────────
+  window.addEventListener('scroll', () => { nav.style.borderBottomColor = window.scrollY > 20 ? 'var(--border)' : 'transparent'; }, { passive: true });
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
-    });
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
   }, { threshold: 0.12 });
-
-  document.querySelectorAll('.fade-up').forEach(el => {
-    el.classList.add('will-animate');
-    observer.observe(el);
-  });
-
-  // ── HERO STAGGER ON LOAD ─────────────────────────────────────────────────
-  const heroEls = document.querySelectorAll('.hero-eyebrow, .hero-name, .hero-title, .hero-desc, .hero-actions, .hero-tags, .hero-stats, .hero-avail');
+  document.querySelectorAll('.fade-up').forEach(el => { el.classList.add('will-animate'); observer.observe(el); });
+  const heroEls = document.querySelectorAll('.hero-eyebrow,.hero-name,.hero-title,.hero-desc,.hero-actions,.hero-tags,.hero-stats,.hero-avail');
   heroEls.forEach((el, i) => {
     el.style.opacity = '0';
-    el.style.tran
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = `opacity 0.6s ease ${i * 0.1}s, transform 0.6s ease ${i * 0.1}s`;
+    requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }));
+  });
+</script>
+</body>
+</html>
