@@ -1222,9 +1222,14 @@
 
     /* ── FADE-IN ANIMATIONS ───────────────────────────────────────────────── */
     .fade-up {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.65s var(--ease), transform 0.65s var(--ease);
+    }
+
+    .fade-up.will-animate {
       opacity: 0;
       transform: translateY(28px);
-      transition: opacity 0.65s var(--ease), transform 0.65s var(--ease);
     }
 
     .fade-up.visible {
@@ -1921,7 +1926,10 @@
     });
   }, { threshold: 0.12 });
 
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  document.querySelectorAll('.fade-up').forEach(el => {
+    el.classList.add('will-animate');
+    observer.observe(el);
+  });
 
   // ── HERO STAGGER ON LOAD ─────────────────────────────────────────────────
   const heroEls = document.querySelectorAll('.hero-eyebrow, .hero-name, .hero-title, .hero-desc, .hero-actions, .hero-tags, .hero-stats, .hero-avail');
