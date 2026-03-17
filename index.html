@@ -632,10 +632,8 @@
 
     .portfolio-card:hover { border-color: var(--gold-dim); transform: translateY(-3px); }
 
-    .portfolio-card.featured {
+    .portfolio-card.span-full {
       grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: 1fr 340px;
     }
 
     .card-preview {
@@ -678,10 +676,6 @@
     .doc-cell  { height: 5px; flex: 1; border-radius: 1px; background: #ebebeb; }
     .doc-cell.hdr { background: #1F4E79; }
 
-    .card-preview-sop {
-      transform: rotate(1deg);
-    }
-
     .preview-badge {
       position: absolute;
       top: 1rem; right: 1rem;
@@ -720,6 +714,134 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
     }
+
+    /* ── LIVE DOCUMENT CARD (replaces iframe) ─────────────────────────────── */
+    .live-doc-card {
+      background: var(--bg);
+      padding: 2.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      position: relative;
+      overflow: hidden;
+      min-height: 160px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .live-doc-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+    }
+
+    .live-doc-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .live-doc-icon {
+      width: 64px;
+      height: 80px;
+      background: #fff;
+      border-radius: 3px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 6px 5px;
+      gap: 3px;
+      transform: rotate(-2deg);
+    }
+
+    .live-doc-icon .dl { height: 4px; border-radius: 2px; background: #e0e0e0; }
+    .live-doc-icon .dl.h { background: #1F4E79; width: 65%; }
+    .live-doc-icon .dl.m { background: #2E75B6; width: 85%; }
+    .live-doc-icon .dl.s { width: 50%; }
+
+    .live-doc-info {}
+
+    .live-doc-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.4rem;
+    }
+
+    .live-doc-status::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 2px rgba(61,186,124,0.2);
+    }
+
+    .live-doc-name {
+      font-family: var(--font-disp);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+
+    .live-doc-version {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+    }
+
+    .live-doc-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .btn-view-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.25rem;
+      background: var(--gold);
+      color: var(--bg);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-view-pdf:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    .btn-download-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.25rem;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      transition: border-color 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-download-pdf:hover { border-color: var(--gold-dim); color: var(--gold); }
 
     .card-body { padding: 1.75rem; flex: 1; }
 
@@ -787,10 +909,9 @@
     .card-link:hover { gap: 0.6rem; }
 
     .card-link-disabled {
-      font-size: 0.78rem;
+      font-size: 0.68rem;
       color: var(--text-dim);
       font-family: var(--font-mono);
-      font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
@@ -1099,75 +1220,6 @@
 
     .footer-links a:hover { color: var(--gold); }
 
-    /* ── PDF VIEWER ───────────────────────────────────────────────────────── */
-    .pdf-viewer-wrap {
-      position: relative;
-      width: 100%;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .pdf-viewer-wrap iframe {
-      width: 100%;
-      height: 520px;
-      border: none;
-      display: block;
-    }
-
-    .pdf-viewer-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.6rem 1.25rem;
-      background: var(--bg3);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .pdf-viewer-label {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gold);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .pdf-viewer-label::before {
-      content: '';
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 0 3px rgba(61,186,124,0.2);
-    }
-
-    .pdf-download-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.3rem 0.75rem;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      transition: border-color 0.2s, color 0.2s;
-    }
-
-    .pdf-download-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
-
-    .portfolio-card.viewer-card {
-      grid-column: 1 / -1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .viewer-card .card-body { padding: 1.5rem 1.75rem 1rem; }
-
     /* ── FADE-IN ANIMATIONS ───────────────────────────────────────────────── */
     .fade-up {
       opacity: 0;
@@ -1192,10 +1244,11 @@
       .hero-stats { grid-template-columns: repeat(4, 1fr); }
       .stat-num { font-size: 2rem; }
       .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-      .portfolio-card.featured { grid-column: auto; display: flex; flex-direction: column; }
       .expertise-grid { grid-template-columns: 1fr 1fr; }
       .tools-grid { grid-template-columns: 1fr 1fr; }
       .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .live-doc-card { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+      .live-doc-actions { flex-direction: row; }
     }
 
     @media (max-width: 640px) {
@@ -1214,10 +1267,12 @@
       .nav-toggle { display: flex; }
       .hero-stats { grid-template-columns: 1fr 1fr; }
       .portfolio-grid { grid-template-columns: 1fr; }
-      .portfolio-card.featured { grid-column: auto; }
+      .portfolio-card.span-full { grid-column: auto; }
       .expertise-grid { grid-template-columns: 1fr; }
       .tools-grid { grid-template-columns: 1fr 1fr; }
       footer { flex-direction: column; align-items: flex-start; }
+      .live-doc-actions { flex-direction: column; width: 100%; }
+      .btn-view-pdf, .btn-download-pdf { justify-content: center; }
     }
 
     @media (max-width: 400px) {
@@ -1465,20 +1520,36 @@
 
     <div class="portfolio-grid">
 
-      <!-- FEATURED: Ball Valve Manual — inline viewer -->
-      <div class="portfolio-card viewer-card fade-up">
-        <div class="pdf-viewer-toolbar">
-          <span class="pdf-viewer-label">Live Document · Ball Valve Inspection Manual v1.0</span>
-          <a href="https://viren024.github.io/docs/BALL%20VALVE%20INSPECTION%20MANUAL_v_1%20(2).pdf" download class="pdf-download-btn">
-            ↓ Download PDF
-          </a>
-        </div>
-        <div class="pdf-viewer-wrap">
-          <iframe
-            src="https://viren024.github.io/docs/BALL%20VALVE%20INSPECTION%20MANUAL_v_1%20(2).pdf"
-            title="Ball Valve Inspection Manual v1.0"
-            loading="lazy">
-          </iframe>
+      <!-- SAMPLE 1: Ball Valve Inspection Manual -->
+      <div class="portfolio-card span-full fade-up">
+        <div class="live-doc-card">
+          <div class="live-doc-left">
+            <div class="live-doc-icon">
+              <div class="dl h"></div>
+              <div class="dl m"></div>
+              <div class="dl"></div>
+              <div class="dl s"></div>
+              <div class="dl"></div>
+              <div class="dl m"></div>
+              <div class="dl s"></div>
+              <div class="dl"></div>
+            </div>
+            <div class="live-doc-info">
+              <div class="live-doc-status">Live Document</div>
+              <div class="live-doc-name">Ball Valve Inspection Manual</div>
+              <div class="live-doc-version">CSTPD — v1.0 · 8 pages · PDF</div>
+            </div>
+          </div>
+          <div class="live-doc-actions">
+            <a href="https://viren024.github.io/docs/BALL%20VALVE%20INSPECTION%20MANUAL_v_1%20(2).pdf"
+               target="_blank" rel="noopener" class="btn-view-pdf">
+              ↗ Open PDF
+            </a>
+            <a href="https://viren024.github.io/docs/BALL%20VALVE%20INSPECTION%20MANUAL_v_1%20(2).pdf"
+               download class="btn-download-pdf">
+              ↓ Download
+            </a>
+          </div>
         </div>
         <div class="card-body">
           <div class="card-type">Inspection Procedure Manual · Sample #1</div>
@@ -1495,7 +1566,54 @@
         </div>
       </div>
 
-      <!-- SOP Sample — coming soon -->
+      <!-- SAMPLE 2: GasWorks Administrator Training SOP -->
+      <div class="portfolio-card span-full fade-up">
+        <div class="live-doc-card">
+          <div class="live-doc-left">
+            <div class="live-doc-icon">
+              <div class="dl h"></div>
+              <div class="dl m"></div>
+              <div class="dl"></div>
+              <div class="dl s"></div>
+              <div class="dl"></div>
+              <div class="dl m"></div>
+              <div class="dl s"></div>
+              <div class="dl"></div>
+            </div>
+            <div class="live-doc-info">
+              <div class="live-doc-status">Live Document</div>
+              <div class="live-doc-name">GasWorks Software Administrator Training</div>
+              <div class="live-doc-version">CSTPD0131-00 · 25 pages · PDF</div>
+            </div>
+          </div>
+          <div class="live-doc-actions">
+            <a href="docs/CSTPD0131-GasWorks-Admin-Training.pdf"
+               target="_blank" rel="noopener" class="btn-view-pdf">
+              ↗ Open PDF
+            </a>
+            <a href="docs/CSTPD0131-GasWorks-Admin-Training.pdf"
+               download class="btn-download-pdf">
+              ↓ Download
+            </a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-type">Administrator Training SOP · Sample #2</div>
+          <div class="card-title">Administrator Training for GasWorks Software (Windsor)</div>
+          <p class="card-desc">GMP-compliant administrator training SOP for the GasWorks software platform (Thermo Fisher Scientific) used with the Prima BT Bench Top Process Mass Spectrometer. Covers 21 CFR Part 11 compliance setup, administrator account management, user and group permissions, system configuration, data backup and recovery procedures, and full audit trail review using the Audit File Viewer.</p>
+          <div class="card-chips">
+            <span class="chip">21 CFR Part 11</span>
+            <span class="chip">GMP Compliant</span>
+            <span class="chip">User Management</span>
+            <span class="chip">Audit Trail</span>
+            <span class="chip">Data Backup &amp; Recovery</span>
+            <span class="chip">Pharma / Biovectra</span>
+            <span class="chip">25 pages</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAMPLE 3: SOP — coming soon -->
       <div class="portfolio-card fade-up">
         <div class="card-preview">
           <div class="coming-preview">
@@ -1504,7 +1622,7 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="card-type">Standard Operating Procedure · Sample #2</div>
+          <div class="card-type">Standard Operating Procedure · Sample #3</div>
           <div class="card-title">Calibration of Analytical Balances (SOP-QC-0042)</div>
           <p class="card-desc">GMP-compliant SOP for analytical balance calibration in pharma environments. Includes approval signatures, revision history, full procedure with acceptance criteria, deviation management workflow, and calibration log form.</p>
           <div class="card-chips">
@@ -1521,7 +1639,7 @@
         </div>
       </div>
 
-      <!-- O&M Excerpt -->
+      <!-- SAMPLE 4: O&M Excerpt -->
       <div class="portfolio-card fade-up">
         <div class="card-preview">
           <div class="coming-preview">
@@ -1530,7 +1648,7 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="card-type">O&amp;M Manual Excerpt · Sample #3</div>
+          <div class="card-type">O&amp;M Manual Excerpt · Sample #4</div>
           <div class="card-title">Operations &amp; Maintenance Manual</div>
           <p class="card-desc">Full O&amp;M manual excerpt with preventive maintenance schedule, corrective maintenance procedures, spare parts list, and pneumatic diagrams. Industrial automation sector.</p>
           <div class="card-chips">
@@ -1545,7 +1663,7 @@
         </div>
       </div>
 
-      <!-- Training Material -->
+      <!-- SAMPLE 5: Training Material -->
       <div class="portfolio-card fade-up">
         <div class="card-preview">
           <div class="coming-preview">
@@ -1554,7 +1672,7 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="card-type">Training Material · Sample #4</div>
+          <div class="card-type">Training Material · Sample #5</div>
           <div class="card-title">Instructor-Led Training Program</div>
           <p class="card-desc">Complete training package including course outline, slide deck, facilitator guide, and post-training competency assessment. Demonstrates instructional design approach for technical audiences.</p>
           <div class="card-chips">
@@ -1783,7 +1901,6 @@
     links.classList.toggle('open');
   });
 
-  // Close nav on link click
   links.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => links.classList.remove('open'));
   });
