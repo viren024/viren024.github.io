@@ -1,712 +1,586 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Case Study — Document Change Request System (Monday.com)</title><style>
-/* cspell:disable-file */
-/* webkit printing magic: print all background colors */
-html {
-	-webkit-print-color-adjust: exact;
-}
-* {
-	box-sizing: border-box;
-	-webkit-print-color-adjust: exact;
-}
-
-html,
-body {
-	margin: 0;
-	padding: 0;
-}
-@media only screen {
-	body {
-		margin: 2em auto;
-		max-width: 900px;
-		color: rgb(55, 53, 47);
-	}
-}
-
-body {
-	line-height: 1.5;
-	white-space: pre-wrap;
-}
-
-a,
-a.visited {
-	color: inherit;
-	text-decoration: underline;
-}
-
-.pdf-relative-link-path {
-	font-size: 80%;
-	color: #444;
-}
-
-h1,
-h2,
-h3 {
-	letter-spacing: -0.01em;
-	line-height: 1.2;
-	font-weight: 600;
-	margin-bottom: 0;
-}
-
-/* Override strong tags inside headings to maintain consistent weight */
-h1 strong,
-h2 strong,
-h3 strong {
-	font-weight: 600;
-}
-
-.page-title {
-	font-size: 2.5rem;
-	font-weight: 700;
-	margin-top: 0;
-	margin-bottom: 0.75em;
-}
-
-h1 {
-	font-size: 1.875rem;
-	margin-top: 1.875rem;
-}
-
-h2 {
-	font-size: 1.5rem;
-	margin-top: 1.5rem;
-}
-
-h3 {
-	font-size: 1.25rem;
-	margin-top: 1.25rem;
-}
-
-.source {
-	border: 1px solid #ddd;
-	border-radius: 3px;
-	padding: 1.5em;
-	word-break: break-all;
-}
-
-.callout {
-	border-radius: 10px;
-	padding: 1rem;
-}
-
-figure {
-	margin: 1.25em 0;
-	page-break-inside: avoid;
-}
-
-figcaption {
-	opacity: 0.5;
-	font-size: 85%;
-	margin-top: 0.5em;
-}
-
-mark {
-	background-color: transparent;
-}
-
-.indented {
-	padding-left: 1.5em;
-}
-
-hr {
-	background: transparent;
-	display: block;
-	width: 100%;
-	height: 1px;
-	visibility: visible;
-	border: none;
-	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
-}
-
-img {
-	max-width: 100%;
-}
-
-@media only print {
-	img {
-		max-height: 100vh;
-		object-fit: contain;
-	}
-}
-
-@page {
-	margin: 1in;
-}
-
-.collection-content {
-	font-size: 0.875rem;
-}
-
-.collection-content td {
-	white-space: pre-wrap;
-	word-break: break-word;
-}
-
-.column-list {
-	display: flex;
-	gap: 46px;
-}
-
-.column {
-	min-width: 0;
-	overflow: hidden;
-}
-
-.column > *:first-child {
-	margin-top: 0;
-}
-
-.table_of_contents-item {
-	display: block;
-	font-size: 0.875rem;
-	line-height: 1.3;
-	padding: 0.125rem;
-}
-
-.table_of_contents-indent-1 {
-	margin-left: 1.5rem;
-}
-
-.table_of_contents-indent-2 {
-	margin-left: 3rem;
-}
-
-.table_of_contents-indent-3 {
-	margin-left: 4.5rem;
-}
-
-.table_of_contents-link {
-	text-decoration: none;
-	opacity: 0.7;
-	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
-}
-
-table,
-th,
-td {
-	border: 1px solid rgba(55, 53, 47, 0.09);
-	border-collapse: collapse;
-}
-
-table {
-	border-left: none;
-	border-right: none;
-}
-
-th,
-td {
-	font-weight: normal;
-	padding: 0.25em 0.5em;
-	line-height: 1.5;
-	min-height: 1.5em;
-	text-align: left;
-}
-
-th {
-	color: rgba(55, 53, 47, 0.6);
-}
-
-ol,
-ul {
-	margin: 0;
-	margin-block-start: 0.6em;
-	margin-block-end: 0.6em;
-}
-
-li > ol:first-child,
-li > ul:first-child {
-	margin-block-start: 0.6em;
-}
-
-ul > li {
-	list-style: disc;
-}
-
-ul.to-do-list {
-	padding-inline-start: 0;
-}
-
-ul.to-do-list > li {
-	list-style: none;
-}
-
-.to-do-children-checked {
-	text-decoration: line-through;
-	opacity: 0.375;
-}
-
-ul.toggle > li {
-	list-style: none;
-}
-
-ul {
-	padding-inline-start: 1.7em;
-}
-
-ul > li {
-	padding-left: 0.1em;
-}
-
-ol {
-	padding-inline-start: 1.6em;
-}
-
-ol > li {
-	padding-left: 0.2em;
-}
-
-.mono ol {
-	padding-inline-start: 2em;
-}
-
-.mono ol > li {
-	text-indent: -0.4em;
-}
-
-.toggle {
-	padding-inline-start: 0em;
-	list-style-type: none;
-}
-
-/* Indent toggle children */
-.toggle > li > details {
-	padding-left: 1.7em;
-}
-
-.toggle > li > details > summary {
-	margin-left: -1.1em;
-}
-
-.selected-value {
-	display: inline-block;
-	padding: 0 0.5em;
-	background: rgba(206, 205, 202, 0.5);
-	border-radius: 3px;
-	margin-right: 0.5em;
-	margin-top: 0.3em;
-	margin-bottom: 0.3em;
-	white-space: nowrap;
-}
-
-.collection-title {
-	display: inline-block;
-	margin-right: 1em;
-}
-
-.page-description {
-	margin-bottom: 2em;
-}
-
-.simple-table {
-	margin-top: 1em;
-	font-size: 0.875rem;
-	empty-cells: show;
-}
-.simple-table td {
-	height: 29px;
-	min-width: 120px;
-}
-
-.simple-table th {
-	height: 29px;
-	min-width: 120px;
-}
-
-.simple-table-header-color {
-	background: rgb(247, 246, 243);
-	color: black;
-}
-.simple-table-header {
-	font-weight: 500;
-}
-
-time {
-	opacity: 0.5;
-}
-
-.icon {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	max-width: 1.2em;
-	max-height: 1.2em;
-	text-decoration: none;
-	vertical-align: text-bottom;
-	margin-right: 0.5em;
-}
-
-img.icon {
-	border-radius: 3px;
-}
-
-.callout img.notion-static-icon {
-	width: 1em;
-	height: 1em;
-}
-
-.callout p {
-	margin: 0;
-}
-
-.callout h1,
-.callout h2,
-.callout h3 {
-	margin: 0 0 0.6rem;
-}
-
-.user-icon {
-	width: 1.5em;
-	height: 1.5em;
-	border-radius: 100%;
-	margin-right: 0.5rem;
-}
-
-.user-icon-inner {
-	font-size: 0.8em;
-}
-
-.text-icon {
-	border: 1px solid #000;
-	text-align: center;
-}
-
-.page-cover-image {
-	display: block;
-	object-fit: cover;
-	width: 100%;
-	max-height: 30vh;
-}
-
-.page-header-icon {
-	font-size: 3rem;
-	margin-bottom: 1rem;
-}
-
-.page-header-icon-with-cover {
-	margin-top: -0.72em;
-	margin-left: 0.07em;
-}
-
-.page-header-icon img {
-	border-radius: 3px;
-}
-
-.link-to-page {
-	margin: 1em 0;
-	padding: 0;
-	border: none;
-	font-weight: 500;
-}
-
-p > .user {
-	opacity: 0.5;
-}
-
-td > .user,
-td > time {
-	white-space: nowrap;
-}
-
-input[type="checkbox"] {
-	transform: scale(1.5);
-	margin-right: 0.6em;
-	vertical-align: middle;
-}
-
-p {
-	margin-top: 0.5em;
-	margin-bottom: 0.5em;
-}
-
-.image {
-	border: none;
-	margin: 1.5em 0;
-	padding: 0;
-	border-radius: 0;
-	text-align: center;
-}
-
-.code,
-code {
-	background: rgba(135, 131, 120, 0.15);
-	border-radius: 3px;
-	padding: 0.2em 0.4em;
-	border-radius: 3px;
-	font-size: 85%;
-	tab-size: 2;
-}
-
-code {
-	color: #eb5757;
-}
-
-.code {
-	padding: 1.5em 1em;
-}
-
-.code-wrap {
-	white-space: pre-wrap;
-	word-break: break-all;
-}
-
-.code > code {
-	background: none;
-	padding: 0;
-	font-size: 100%;
-	color: inherit;
-}
-
-blockquote {
-	font-size: 1em;
-	margin: 1em 0;
-	padding-left: 1em;
-	border-left: 3px solid rgb(55, 53, 47);
-}
-
-blockquote.quote-large {
-	font-size: 1.25em;
-}
-
-.bookmark {
-	text-decoration: none;
-	max-height: 8em;
-	padding: 0;
-	display: flex;
-	width: 100%;
-	align-items: stretch;
-}
-
-.bookmark-title {
-	font-size: 0.85em;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	height: 1.75em;
-	white-space: nowrap;
-}
-
-.bookmark-text {
-	display: flex;
-	flex-direction: column;
-}
-
-.bookmark-info {
-	flex: 4 1 180px;
-	padding: 12px 14px 14px;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-}
-
-.bookmark-image {
-	width: 33%;
-	flex: 1 1 180px;
-	display: block;
-	position: relative;
-	object-fit: cover;
-	border-radius: 1px;
-}
-
-.bookmark-description {
-	color: rgba(55, 53, 47, 0.6);
-	font-size: 0.75em;
-	overflow: hidden;
-	max-height: 4.5em;
-	word-break: break-word;
-}
-
-.bookmark-href {
-	font-size: 0.75em;
-	margin-top: 0.25em;
-}
-
-.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
-.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
-.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
-.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
-.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
-.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
-.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
-.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
-.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
-.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
-.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
-.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
-.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
-.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
-.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
-.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
-.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
-.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
-.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
-.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
-.highlight-default {
-	color: rgba(44, 44, 43, 1);
-}
-.highlight-gray {
-	color: rgba(125, 122, 117, 1);
-	fill: rgba(125, 122, 117, 1);
-}
-.highlight-brown {
-	color: rgba(159, 118, 90, 1);
-	fill: rgba(159, 118, 90, 1);
-}
-.highlight-orange {
-	color: rgba(210, 123, 45, 1);
-	fill: rgba(210, 123, 45, 1);
-}
-.highlight-yellow {
-	color: rgba(203, 148, 52, 1);
-	fill: rgba(203, 148, 52, 1);
-}
-.highlight-teal {
-	color: rgba(80, 148, 110, 1);
-	fill: rgba(80, 148, 110, 1);
-}
-.highlight-blue {
-	color: rgba(56, 125, 201, 1);
-	fill: rgba(56, 125, 201, 1);
-}
-.highlight-purple {
-	color: rgba(154, 107, 180, 1);
-	fill: rgba(154, 107, 180, 1);
-}
-.highlight-pink {
-	color: rgba(193, 76, 138, 1);
-	fill: rgba(193, 76, 138, 1);
-}
-.highlight-red {
-	color: rgba(207, 81, 72, 1);
-	fill: rgba(207, 81, 72, 1);
-}
-.highlight-default_background {
-	color: rgba(44, 44, 43, 1);
-}
-.highlight-gray_background {
-	background: rgba(42, 28, 0, 0.07);
-}
-.highlight-brown_background {
-	background: rgba(139, 46, 0, 0.086);
-}
-.highlight-orange_background {
-	background: rgba(224, 101, 1, 0.129);
-}
-.highlight-yellow_background {
-	background: rgba(211, 168, 0, 0.137);
-}
-.highlight-teal_background {
-	background: rgba(0, 100, 45, 0.09);
-}
-.highlight-blue_background {
-	background: rgba(0, 124, 215, 0.094);
-}
-.highlight-purple_background {
-	background: rgba(102, 0, 178, 0.078);
-}
-.highlight-pink_background {
-	background: rgba(197, 0, 93, 0.086);
-}
-.highlight-red_background {
-	background: rgba(223, 22, 0, 0.094);
-}
-.block-color-default {
-	color: inherit;
-	fill: inherit;
-}
-.block-color-gray {
-	color: rgba(125, 122, 117, 1);
-	fill: rgba(125, 122, 117, 1);
-}
-.block-color-brown {
-	color: rgba(159, 118, 90, 1);
-	fill: rgba(159, 118, 90, 1);
-}
-.block-color-orange {
-	color: rgba(210, 123, 45, 1);
-	fill: rgba(210, 123, 45, 1);
-}
-.block-color-yellow {
-	color: rgba(203, 148, 52, 1);
-	fill: rgba(203, 148, 52, 1);
-}
-.block-color-teal {
-	color: rgba(80, 148, 110, 1);
-	fill: rgba(80, 148, 110, 1);
-}
-.block-color-blue {
-	color: rgba(56, 125, 201, 1);
-	fill: rgba(56, 125, 201, 1);
-}
-.block-color-purple {
-	color: rgba(154, 107, 180, 1);
-	fill: rgba(154, 107, 180, 1);
-}
-.block-color-pink {
-	color: rgba(193, 76, 138, 1);
-	fill: rgba(193, 76, 138, 1);
-}
-.block-color-red {
-	color: rgba(207, 81, 72, 1);
-	fill: rgba(207, 81, 72, 1);
-}
-.block-color-default_background {
-	color: inherit;
-	fill: inherit;
-}
-.block-color-gray_background {
-	background: rgba(240, 239, 237, 1);
-}
-.block-color-brown_background {
-	background: rgba(245, 237, 233, 1);
-}
-.block-color-orange_background {
-	background: rgba(251, 235, 222, 1);
-}
-.block-color-yellow_background {
-	background: rgba(249, 243, 220, 1);
-}
-.block-color-teal_background {
-	background: rgba(232, 241, 236, 1);
-}
-.block-color-blue_background {
-	background: rgba(229, 242, 252, 1);
-}
-.block-color-purple_background {
-	background: rgba(243, 235, 249, 1);
-}
-.block-color-pink_background {
-	background: rgba(250, 233, 241, 1);
-}
-.block-color-red_background {
-	background: rgba(252, 233, 231, 1);
-}
-.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
-.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
-.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
-.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
-.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
-.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
-.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
-.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
-.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
-.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
-
-.checkbox {
-	display: inline-flex;
-	vertical-align: text-bottom;
-	width: 16;
-	height: 16;
-	background-size: 16px;
-	margin-left: 2px;
-	margin-right: 5px;
-}
-
-.checkbox-on {
-	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
-}
-
-.checkbox-off {
-	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
-}
-	
-</style></head><body><article id="343e6050-5585-43b9-b21a-0e82c65ea326" class="page sans"><header><div class="page-header-icon undefined"><span class="icon">📄</span></div><h1 class="page-title" dir="auto">Case Study — Document Change Request System (<a href="http://Monday.com">Monday.com</a>)</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><div style="display:contents" dir="ltr"><figure class="block-color-teal_background callout" style="white-space:pre-wrap;display:flex" id="1eaf22be-df53-4b5b-a4ff-851df886d894"><div style="font-size:1.5em"><span class="icon">✅</span></div><div style="width:100%"><div style="display:contents" dir="auto"><p id="de7fac78-2a23-4637-98e3-a2fc386fab24" class="">Workflow &amp; Traceability Implementation in <a href="http://monday.com/">Monday.com</a><br/></p></div><div style="display:contents" dir="auto"><p id="3f775bc9-cf5f-4b3f-b481-cf960fed7f8c" class="">Document Change Request System for a regulated manufacturing environment</p></div></div></figure></div><div style="display:contents" dir="auto"><div id="43e6b2d2-3ffb-4110-9071-93f452c3d372" class="column-list"><div style="display:contents" dir="auto"><div id="1135a8af-8b9a-4b71-a44c-053eb9bdd053" style="width:100%" class="column"><div style="display:contents" dir="auto"><p id="0f1f702f-9459-4b0c-b6cf-67cac46f26ea" class=""><strong>Industry</strong><br/></p></div><div style="display:contents" dir="auto"><p id="c969dd0f-64df-47c6-9f9d-10c09bdf8399" class="">Regulated Manufacturing / Quality Environment</p></div></div></div><div style="display:contents" dir="auto"><div id="f98d5967-813d-4359-95f6-8f944e894650" style="width:100%" class="column"><div style="display:contents" dir="auto"><p id="ffaff504-4fa2-4367-938e-3db1ffb7838e" class=""><strong>Company</strong><br/></p></div><div style="display:contents" dir="auto"><p id="a931ebf4-5f69-4be9-9a32-aee7f4b5685e" class="">Name withheld (regulated manufacturing environment)</p></div></div></div><div style="display:contents" dir="auto"><div id="7050f08f-9fd6-479d-8f6b-1259b76e0d3b" style="width:100%" class="column"><div style="display:contents" dir="auto"><p id="7dca4116-e87b-4a2e-b854-3869fa8d93c7" class=""><strong>Role</strong><br/></p></div><div style="display:contents" dir="auto"><p id="e73295ed-fdbc-4f95-b1be-6a913787c223" class="">Technical Writer &amp; Process Designer</p></div><div style="display:contents" dir="auto"><p id="32ecb1e9-dcd2-8073-8f2b-facd4f3babb2" class="">
-</p></div></div></div></div></div><div style="display:contents" dir="auto"><p id="b59b267f-202e-47df-afa3-fd26ff4643a3" class=""><strong>Platform</strong><br/></p></div><div style="display:contents" dir="auto"><p id="7943cc6f-c037-4e7a-9262-ae443bd834a8" class=""><a href="http://Monday.com">Monday.com</a></p></div><div style="display:contents" dir="auto"><hr id="49485225-308c-4918-a8c2-5367e5c80c88"/></div><div style="display:contents" dir="auto"><h2 id="2b7a83e9-4e7d-4944-9412-415b5fd66fc0" class="">Executive Summary</h2></div><div style="display:contents" dir="auto"><p id="5217ba42-89e0-49dc-9e5b-1721c29a0bc8" class="">Designed and implemented an end-to-end document change request system in <a href="http://monday.com/">Monday.com</a> to standardize intake, routing, approvals, and archival in a regulated manufacturing environment. The solution introduced structured submissions, automated routing, defined stage‑gated workflow controls, and a centralized quality review dashboard to improve visibility, accountability, and traceability across multiple projects.</p></div><div style="display:contents" dir="ltr"><figure class="block-color-blue_background callout" style="white-space:pre-wrap;display:flex" id="8bd78b3c-cc47-4108-a543-ba233fc5e772"><div style="font-size:1.5em"><span class="icon">📌</span></div><div style="width:100%"><div style="display:contents" dir="auto"><p id="ac4e0a81-620b-4598-8e9c-c5417feb9ed6" class=""><strong>Outcome</strong>: Faster approvals, improved change traceability and review visibility, fewer intake errors, and higher QA efficiency through a single prioritized QA dashboard.</p></div></div></figure></div><div style="display:contents" dir="auto"><hr id="a31b6a98-984a-4799-9eac-b7ce07e28d10"/></div><div style="display:contents" dir="auto"><h2 id="cbb8ac3e-ef5f-482c-81e4-9aebdf87541a" class="">Problem Statement</h2></div><div style="display:contents" dir="auto"><p id="be093812-9501-4bbb-aad1-87f22cc3651e" class="">Before implementation, frequent document change requests across multiple projects were difficult to track due to the high volume of active changes and the absence of a centralized intake system. At peak workload, ~130 document changes were managed by technical writers, ~100 were under QA review, and up to ~300 requests were active across departments. Requests were received through multiple uncoordinated channels (email, SharePoint comments, multiple Monday boards, and verbal requests). This created:</p></div><div style="display:contents" dir="auto"><ul id="32ecb1e9-dcd2-8003-9066-da2b71cc03e2" class="bulleted-list"><li style="list-style-type:disc">Limited visibility into the status and ownership of active change requests</li></ul></div><div style="display:contents" dir="auto"><ul id="32ecb1e9-dcd2-80a0-85df-c3034a4f96e0" class="bulleted-list"><li style="list-style-type:disc">Inconsistent prioritization across multiple concurrent projects</li></ul></div><div style="display:contents" dir="auto"><ul id="32ecb1e9-dcd2-805d-a91c-f61376215945" class="bulleted-list"><li style="list-style-type:disc">Back‑and‑forth clarifications due to incomplete or inconsistent change information</li></ul></div><div style="display:contents" dir="auto"><ul id="32ecb1e9-dcd2-80b7-8584-d8f48447691b" class="bulleted-list"><li style="list-style-type:disc">Increased coordination load on a short‑staffed QA team</li></ul></div><div style="display:contents" dir="auto"><ul id="32ecb1e9-dcd2-80d8-afc4-e2021c6eaf6f" class="bulleted-list"><li style="list-style-type:disc">Increased operational risk due to lack of standardized governance and limited ability to track changes across all projects</li></ul></div><div style="display:contents" dir="auto"><hr id="2db6d806-22e0-4322-b9d6-8880c3382f2e"/></div><div style="display:contents" dir="auto"><h2 id="ca1cb7b1-1ecf-43f6-9b61-06a62b44442b" class="">Solution Architecture</h2></div><div style="display:contents" dir="auto"><p id="e470f85f-aae8-4348-ae69-f9fcd15740c2" class="">The <a href="http://monday.com/">Monday.com</a> workspace managed the complete document change request lifecycle through six integrated stages designed to enforce structured workflow governance, review accountability, and end‑to‑end traceability while improving operational efficiency.</p></div><div style="display:contents" dir="ltr"><figure id="32ecb1e9-dcd2-80c2-92f5-cd2a42e17053" class="image"><a href="image.png"><img style="width:564.984375px" src="image.png"/></a></figure></div><div style="display:contents" dir="auto"><h3 id="975b8d9d-6e1e-4cbf-bcc4-abba0de55867" class="">Stage 1 — Request Form Submission</h3></div><div style="display:contents" dir="auto"><p id="2d982bea-e77f-4834-92b1-365766abb111" class="">Users submit requests through a standardized Monday Form accessible across departments. Required metadata includes document type, category, change reason, priority, due date, and attachments.</p></div><div style="display:contents" dir="ltr"><figure id="32ecb1e9-dcd2-8094-ab41-eae011e4655f" class="image"><a href="image%201.png"><img style="width:542.96875px" src="image%201.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="4d5f940c-397d-4b55-bc96-1f4b3ecee150" class="">Figure 1: Request Form (PKT Request Form)</p></div><div style="display:contents" dir="auto"><h3 id="27386685-ab6b-4bbc-b749-861046d0cec3" class="">Stage 2 — Intake Board + Manager Review</h3></div><div style="display:contents" dir="auto"><p id="95812008-0d09-4133-98b8-056633ef40e9" class="">All submissions appear in a centralized Intake Board for manager decision-making (approve, reject with justification, reassign, or request more detail). Automations notify the requester and route approved items to the correct Project Board.</p></div><div style="display:contents" dir="ltr"><figure id="32ecb1e9-dcd2-807c-b1b5-fadae42b888e" class="image"><a href="image%202.png"><img style="width:643.96875px" src="image%202.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="3775cb63-c9f9-4c3a-92a7-10b0f03db7bd" class="">Figure 2: Intake Board / manager queue (Packet Requests)</p></div><div style="display:contents" dir="auto"><h3 id="ad14655f-fd35-4c75-8e69-2b8208ffa721" class="">Stage 3 — Departmental Workflow (Stage‑Gated Review)</h3></div><div style="display:contents" dir="auto"><p id="3af93ebe-9f72-432e-9d78-1ae4ef13cd65" class="">Each Project Board follows a controlled workflow aligned to stage gates:</p></div><div style="display:contents" dir="auto"><ul id="76d7738c-bca9-478f-9d54-c11d312c1b79" class="bulleted-list"><li style="list-style-type:disc">Draft Initiated</li></ul></div><div style="display:contents" dir="auto"><ul id="7bcaa976-1af7-43d0-97cb-ec2faa833238" class="bulleted-list"><li style="list-style-type:disc">Draft In Progress</li></ul></div><div style="display:contents" dir="auto"><ul id="656bc7c4-87a3-4b4f-b4f4-8d29562cbc04" class="bulleted-list"><li style="list-style-type:disc">Department Review</li></ul></div><div style="display:contents" dir="auto"><ul id="dcb04ead-c0c9-4bac-9112-e6af809b238e" class="bulleted-list"><li style="list-style-type:disc">QA Review</li></ul></div><div style="display:contents" dir="auto"><ul id="f6c8243d-3abd-47d6-8386-2742cf168011" class="bulleted-list"><li style="list-style-type:disc">QA Pre-Approved</li></ul></div><div style="display:contents" dir="auto"><ul id="1a1e291e-25c2-4cb8-b353-c9ed86c7b605" class="bulleted-list"><li style="list-style-type:disc">Client/Stakeholder Review (if applicable)</li></ul></div><div style="display:contents" dir="auto"><ul id="8a77e072-08ea-43ef-a8bd-fe26bfdd6b37" class="bulleted-list"><li style="list-style-type:disc">Final Approved</li></ul></div><div style="display:contents" dir="ltr"><figure id="32ecb1e9-dcd2-8021-a8fb-c510e66e0b32" class="image"><a href="image%203.png"><img style="width:575.984375px" src="image%203.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="41109b97-bb4d-49e5-b2b2-b43c22514ca9" class="">Figure 3: Departmental Project Board (workflow groups and status stages)</p></div><div style="display:contents" dir="auto"><h3 id="d91e4af0-4e4f-463c-8778-c0447cc36d95" class="">Stage 4 — Central QA Review Board</h3></div><div style="display:contents" dir="auto"><p id="45875994-521e-4f6a-87d9-49b58e0452d0" class="">When items reach QA Review, they automatically appear on a centralized QA dashboard consolidating requests from all projects. QA can drag-and-drop prioritize while preserving metadata, comments, and attachments.</p></div><div style="display:contents" dir="ltr"><figure id="32ecb1e9-dcd2-801c-a91f-e1c73343ab03" class="image"><a href="image%204.png"><img style="width:583.984375px" src="image%204.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="962f9edf-28b4-41dc-9f1d-5fa985479b8f" class="">Figure 4: Central QA Review Board (cross-project consolidation)</p></div><div style="display:contents" dir="auto"><h3 id="d8daa3e8-1edd-4681-9c79-f0154f64f871" class="">Stage 5 — QA Pre-Approved → Return to Project Board</h3></div><div style="display:contents" dir="auto"><p id="5456c81e-1e1f-4941-bf1c-38db083fae3d" class="">After QA pre-approval, items return to the originating Project Board for final stakeholder steps (if applicable) and final approval.</p></div><div style="display:contents" dir="ltr"><figure id="32ecb1e9-dcd2-8074-8b97-f91376d3281f" class="image"><a href="image%205.png"><img style="width:583.984375px" src="image%205.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="401f75e1-9f2c-4765-a972-115ba9277306" class="">Figure 5: Pre-approved items returning to project board for closure</p></div><div style="display:contents" dir="auto"><h3 id="e495d2b1-e1fc-49ed-aeb5-e532a992e275" class="">Stage 6 — Effective Documents Repository</h3></div><div style="display:contents" dir="auto"><p id="4dba1337-a281-4aca-9dcb-891b2c06120b" class="">Once marked Effective, items move to the Effective Documents Board as the final archive to keep active boards clean while maintaining complete traceability for reporting, review history, and inspection support.</p></div><div style="display:contents" dir="ltr"><figure id="32ecb1e9-dcd2-8013-80f8-f784fd0f3477" class="image"><a href="image%206.png"><img style="width:583.984375px" src="image%206.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="86cd8f6c-5ea9-467d-920f-5bf8fc09a510" class="">Figure 6: Effective Documents repository (final archive view)</p></div><div style="display:contents" dir="auto"><hr id="fcaa60da-3a6a-439f-8eee-2b328064d3ef"/></div><div style="display:contents" dir="auto"><h2 id="b4497d0c-42fd-4272-97d1-efb157bfb471" class="">Technical Implementation Details</h2></div><div style="display:contents" dir="auto"><h3 id="7de61e90-27e1-4df0-b042-885c578bbf16" class=""><a href="http://Monday.com">Monday.com</a> Features Utilized</h3></div><div style="display:contents" dir="auto"><ul id="9f90c0e1-4156-48ce-a86d-9dfea0cd2c74" class="bulleted-list"><li style="list-style-type:disc"><strong>Monday Forms</strong>: Standardized intake with conditional logic and field validation</li></ul></div><div style="display:contents" dir="auto"><ul id="f5b1b405-bd01-4dcb-b39b-9d4ebba78dc5" class="bulleted-list"><li style="list-style-type:disc"><strong>Automations</strong>: Status-based routing, notifications, cross-board item moves</li></ul></div><div style="display:contents" dir="auto"><ul id="f1b6cb77-feda-4ad2-a5a8-cf595a415ff1" class="bulleted-list"><li style="list-style-type:disc"><strong>Custom Fields</strong>: Document type, priority, review status, approval dates, metadata</li></ul></div><div style="display:contents" dir="auto"><ul id="76c2945c-3ca7-4a29-8fd0-3ce9b52f2322" class="bulleted-list"><li style="list-style-type:disc"><strong>Integrations</strong>: Email notifications, file attachments, SharePoint connectors</li></ul></div><div style="display:contents" dir="auto"><ul id="8f1f658a-88d2-4cf6-9a48-bbf3b4b6530a" class="bulleted-list"><li style="list-style-type:disc"><strong>Permissions</strong>: Role-based access for managers, QA, and general users</li></ul></div><div style="display:contents" dir="auto"><h3 id="5af5d3c7-b18f-41d6-97de-b78acce749c8" class="">Automation Rules (Examples)</h3></div><div style="display:contents" dir="auto"><ul id="386067f7-58a3-433c-9770-7d3305c48ffd" class="bulleted-list"><li style="list-style-type:disc">Status change triggers to route items between boards</li></ul></div><div style="display:contents" dir="auto"><ul id="9f10eb47-61b3-4853-87f4-adec18444990" class="bulleted-list"><li style="list-style-type:disc">Due date reminders to assignees/reviewers</li></ul></div><div style="display:contents" dir="auto"><ul id="1152b439-4dd0-485d-8df0-11d459a6d395" class="bulleted-list"><li style="list-style-type:disc">Emails to requesters on approval/rejection</li></ul></div><div style="display:contents" dir="auto"><ul id="4af5f39e-8482-403b-b3ce-337a4df2b0c1" class="bulleted-list"><li style="list-style-type:disc">Automatic archival of completed items to the Effective Documents board</li></ul></div><div style="display:contents" dir="auto"><hr id="32076826-4c41-41f8-81f7-1ff9cbd2012d"/></div><div style="display:contents" dir="auto"><h2 id="5f6f3ff5-5088-4861-b0fe-7d2d178dad61" class="">Results and Impact</h2></div><div style="display:contents" dir="auto"><div id="32ecb1e9-dcd2-8072-82fe-e11c309f60a0" class="column-list"><div style="display:contents" dir="auto"><div id="32ecb1e9-dcd2-80e6-ad37-ed9e57074714" style="width:50%" class="column"><div style="display:contents" dir="ltr"><figure class="block-color-yellow_background callout" style="white-space:pre-wrap;display:flex" id="5dcc3579-2d63-42db-998b-06baa3f3ab9e"><div style="font-size:1.5em"><span class="icon">📊</span></div><div style="width:100%"><div style="display:contents" dir="auto"><p id="58d208e6-1b41-46ab-9b8b-220c66ec0351" class=""><strong>Centralized Visibility &amp; Traceability</strong></p></div><div style="display:contents" dir="auto"><p id="664579c2-0dfb-4b7d-acb9-1427aad537da" class="">Centralized, form‑based intake resulted in 95%+ of document change requests being captured in a single workflow, significantly improving tracking and visibility across projects.</p></div></div></figure></div></div></div><div style="display:contents" dir="auto"><div id="32ecb1e9-dcd2-80a2-87e8-df80bee9e3d2" style="width:50%" class="column"><div style="display:contents" dir="ltr"><figure class="block-color-teal_background callout" style="white-space:pre-wrap;display:flex" id="136704f4-4ee8-42b1-87cb-ad59eb45d83a"><div style="font-size:1.5em"><span class="icon">🎯</span></div><div style="width:100%"><div style="display:contents" dir="auto"><p id="a5f5743d-bea8-4742-b031-a63aeed607e7" class=""><strong>Improved Documentation Accuracy</strong></p></div><div style="display:contents" dir="auto"><p id="e9fe7d6d-846a-4932-8790-9a3d690b0402" class="">A single, standardized change submission method made it easier for multiple departments to clearly indicate required updates, leading to an estimated ~10% improvement in documentation accuracy.</p></div></div></figure></div></div></div></div></div><div style="display:contents" dir="auto"><div id="32ecb1e9-dcd2-80e6-ae08-f131e54f59db" class="column-list"><div style="display:contents" dir="auto"><div id="32ecb1e9-dcd2-80e2-a034-ebc948353fd9" style="width:50%" class="column"><div style="display:contents" dir="ltr"><figure class="block-color-purple_background callout" style="white-space:pre-wrap;display:flex" id="91fd7a51-8b78-46b8-9076-22664b47fbaa"><div style="font-size:1.5em"><span class="icon">🧾</span></div><div style="width:100%"><div style="display:contents" dir="auto"><p id="ee6ffe4c-ce44-4ac8-946b-7643978708ea" class=""><strong>QA Oversight Improvemnet</strong></p></div><div style="display:contents" dir="auto"><p id="634d1c6b-fde8-4260-8c1c-a99a6b84a417" class="">Enabled a short‑staffed QA team to manage 100+ concurrent change requests through a centralized review dashboard with flexible, manager‑driven prioritization.</p></div></div></figure></div></div></div><div style="display:contents" dir="auto"><div id="32ecb1e9-dcd2-808d-9ebb-fd6e61a578b2" style="width:50%" class="column"><div style="display:contents" dir="ltr"><figure class="block-color-orange_background callout" style="white-space:pre-wrap;display:flex" id="bda8ef67-a1d8-4412-b7b6-dc138762c418"><div style="font-size:1.5em"><span class="icon">⏱️</span></div><div style="width:100%"><div style="display:contents" dir="auto"><p id="27fafe77-7325-4da7-9424-18cb45781b05" class=""><strong>Faster Approval Cycles</strong></p></div><div style="display:contents" dir="auto"><p id="f42bded0-e84b-45d5-a34b-f05181f324e8" class="">Automated routing and manager gatekeeping reduced manual back‑and‑forth with QA and other departments, resulting in approximately 15% faster approval turnaround.</p></div></div></figure></div></div></div></div></div><div style="display:contents" dir="auto"><hr id="0a5cd193-9ed0-41b6-98a3-4d78b9c8d98f"/></div><div style="display:contents" dir="auto"><h2 id="5ede61db-6b96-414f-9f43-4aeb2cc4fdeb" class="">About the Author</h2></div><div style="display:contents" dir="auto"><p id="5324fa5f-48f1-4b26-a2ee-60f72452f3be" class="">Viren Patel is a Technical Writer with a B.Eng. in Electrical Engineering and experience in GMP-regulated pharmaceutical manufacturing. He develops SOPs, O&amp;M manuals, training materials, and workflow/process automation solutions for quality-critical environments.</p></div><div style="display:contents" dir="auto"><ul id="ca79d61b-da83-405d-8508-0b5f146a772e" class="bulleted-list"><li style="list-style-type:disc">Portfolio: <a href="https://viren024.github.io">https://viren024.github.io</a></li></ul></div><div style="display:contents" dir="auto"><ul id="ce9ccae0-5ebd-43a0-94dc-d400aa1b73ce" class="bulleted-list"><li style="list-style-type:disc">Contact: <a href="mailto:patelviren024@gmail.com">patelviren024@gmail.com</a></li></ul></div><div style="display:contents" dir="auto"><p id="32ecb1e9-dcd2-804d-bb12-d7a52ff651fe" class="">
-</p></div></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Case Study — Document Change Request System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d0f14;--bg2:#13161e;--bg3:#1a1e28;--surface:#1e2330;--border:#2a3045;
+  --gold:#c9a84c;--gold-light:#e8c97a;--gold-dim:#8a6e30;
+  --text:#e8e6df;--text-muted:#8a8f9e;--text-dim:#555b6e;
+  --green:#3dba7c;--blue:#4a8fd9;--purple:#9b6fd4;--orange:#d4834a;
+  --font-disp:"Playfair Display",Georgia,serif;
+  --font-body:"DM Sans",sans-serif;
+  --font-mono:"DM Mono",monospace;
+  --max:900px;--ease:cubic-bezier(0.22,1,0.36,1);
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden;}
+a{color:var(--gold);text-decoration:none;}
+a:hover{text-decoration:underline;}
+img{max-width:100%;display:block;}
+
+/* NOISE TEXTURE */
+body::before{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.4;}
+
+/* HERO */
+.hero{position:relative;padding:60px 40px 50px;background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;}
+.hero-glow{position:absolute;right:-10%;top:-20%;width:500px;height:500px;background:radial-gradient(ellipse,rgba(201,168,76,0.07) 0%,transparent 65%);pointer-events:none;}
+.hero-glow2{position:absolute;left:-5%;bottom:-10%;width:400px;height:400px;background:radial-gradient(ellipse,rgba(74,143,217,0.05) 0%,transparent 65%);pointer-events:none;}
+.hero-inner{max-width:var(--max);margin:0 auto;position:relative;z-index:1;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:0.6rem;font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+.hero-eyebrow::before{content:"";display:block;width:24px;height:1px;background:var(--gold);}
+.hero-title{font-family:var(--font-disp);font-size:clamp(2rem,4vw,3rem);font-weight:900;line-height:1.1;color:var(--text);margin-bottom:0.5rem;}
+.hero-title em{font-style:normal;color:var(--gold);}
+.hero-subtitle{font-size:1rem;color:var(--text-muted);max-width:620px;margin-bottom:2rem;line-height:1.7;}
+.hero-meta{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;}
+.meta-pill{display:inline-flex;flex-direction:column;padding:0.75rem 1.25rem;background:var(--bg3);border:1px solid var(--border);border-radius:3px;}
+.meta-pill-label{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:0.2rem;}
+.meta-pill-value{font-size:0.85rem;color:var(--text);font-weight:500;}
+.outcome-banner{display:flex;align-items:flex-start;gap:1rem;padding:1.25rem 1.5rem;background:rgba(61,186,124,0.06);border:1px solid rgba(61,186,124,0.2);border-left:3px solid var(--green);border-radius:3px;}
+.outcome-icon{font-size:1.2rem;flex-shrink:0;margin-top:0.1rem;}
+.outcome-text{font-size:0.9rem;color:var(--text-muted);line-height:1.65;}
+.outcome-text strong{color:var(--green);}
+
+/* MAIN CONTENT */
+.content{max-width:var(--max);margin:0 auto;padding:60px 40px 100px;}
+
+/* SECTION */
+.section{margin-bottom:60px;}
+.section-label{display:inline-flex;align-items:center;gap:0.6rem;font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem;}
+.section-label::before{content:"";display:block;width:20px;height:1px;background:var(--gold);}
+.section-title{font-family:var(--font-disp);font-size:1.7rem;font-weight:700;color:var(--text);margin-bottom:1rem;line-height:1.2;}
+.section-body{font-size:0.95rem;color:var(--text-muted);line-height:1.8;}
+.section-body p{margin-bottom:1rem;}
+.section-body p:last-child{margin-bottom:0;}
+hr.divider{border:none;border-top:1px solid var(--border);margin:60px 0;}
+
+/* PROBLEM CARDS */
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem;}
+.problem-card{padding:1.25rem 1.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:3px;border-left:2px solid var(--red, #e05a5a);display:flex;gap:0.85rem;align-items:flex-start;font-size:0.87rem;color:var(--text-muted);line-height:1.6;}
+.problem-card::before{content:"—";color:#e05a5a;flex-shrink:0;font-family:var(--font-mono);margin-top:0.05em;}
+
+/* STAT CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin:2rem 0;position:relative;}
+.stats-row::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-dim));}
+.stat-card{background:var(--bg2);padding:2rem 1.5rem;text-align:center;}
+.stat-num{font-family:var(--font-disp);font-size:2.8rem;font-weight:900;color:var(--gold);line-height:1;margin-bottom:0.3rem;}
+.stat-label{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-dim);line-height:1.4;}
+
+/* WORKFLOW DIAGRAM */
+.workflow{margin:2.5rem 0;}
+.workflow-title{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:1.25rem;}
+.flow-stages{display:flex;flex-direction:column;gap:0;}
+.flow-stage{display:grid;grid-template-columns:36px 1fr;gap:0 1.25rem;align-items:stretch;}
+.flow-line{display:flex;flex-direction:column;align-items:center;gap:0;}
+.flow-node{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:0.75rem;font-weight:600;flex-shrink:0;z-index:1;}
+.flow-connector{width:2px;background:var(--border);flex:1;min-height:20px;}
+.flow-body{padding:0 0 28px 0;}
+.flow-stage:last-child .flow-body{padding-bottom:0;}
+.flow-stage:last-child .flow-connector{display:none;}
+.stage-card{padding:1.25rem 1.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:3px;transition:border-color 0.2s;}
+.stage-card:hover{border-color:var(--gold-dim);}
+.stage-num{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.3rem;}
+.stage-name{font-family:var(--font-disp);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:0.4rem;}
+.stage-desc{font-size:0.84rem;color:var(--text-muted);line-height:1.6;}
+.stage-chips{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.75rem;}
+.stage-chip{padding:0.18rem 0.55rem;background:var(--surface);border:1px solid var(--border);border-radius:2px;font-size:0.62rem;font-family:var(--font-mono);color:var(--text-dim);}
+
+/* BRANCH ROW (approve/reject/reassign) */
+.branch-row{display:flex;gap:0.75rem;margin:0.75rem 0 0.75rem 0;}
+.branch{flex:1;padding:0.7rem 1rem;border-radius:3px;border:1px solid;font-size:0.8rem;font-weight:500;}
+.branch-approve{background:rgba(61,186,124,0.08);border-color:rgba(61,186,124,0.25);color:var(--green);}
+.branch-reject{background:rgba(224,90,90,0.08);border-color:rgba(224,90,90,0.25);color:#e05a5a;}
+.branch-reassign{background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2);color:var(--gold);}
+.branch-label{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.2rem;opacity:0.7;}
+
+/* SCREENSHOTS */
+.screenshot-section{margin:2.5rem 0;}
+.screenshot-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:1.25rem;}
+.screenshot-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.screenshot-card{background:var(--bg3);border:1px solid var(--border);border-radius:4px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;}
+.screenshot-card:hover{border-color:var(--gold-dim);transform:translateY(-2px);}
+.screenshot-card.full{grid-column:1/-1;}
+.screenshot-img-wrap{width:100%;overflow:hidden;border-bottom:1px solid var(--border);}
+.screenshot-img-wrap img{width:100%;height:auto;display:block;filter:brightness(0.95);}
+.screenshot-card:hover .screenshot-img-wrap img{filter:brightness(1);}
+.screenshot-caption{padding:0.75rem 1rem;display:flex;align-items:center;gap:0.6rem;}
+.screenshot-fig{font-family:var(--font-mono);font-size:0.6rem;color:var(--gold);letter-spacing:0.1em;flex-shrink:0;}
+.screenshot-cap-text{font-size:0.78rem;color:var(--text-muted);}
+
+/* TECH FEATURES */
+.tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem;}
+.tech-card{padding:1.25rem 1.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:3px;}
+.tech-card-icon{font-size:1.1rem;margin-bottom:0.5rem;}
+.tech-card-title{font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:0.35rem;}
+.tech-card-desc{font-size:0.8rem;color:var(--text-muted);line-height:1.6;}
+
+/* RESULTS */
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem;}
+.result-card{padding:1.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:3px;position:relative;overflow:hidden;}
+.result-card::after{content:"";position:absolute;bottom:0;left:0;width:0;height:2px;transition:width 0.4s var(--ease);}
+.result-card:hover::after{width:100%;}
+.result-card.gold::after{background:var(--gold);}
+.result-card.green::after{background:var(--green);}
+.result-card.blue::after{background:var(--blue);}
+.result-card.purple::after{background:var(--purple);}
+.result-icon{font-size:1.5rem;margin-bottom:0.75rem;}
+.result-title{font-family:var(--font-disp);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:0.5rem;}
+.result-desc{font-size:0.84rem;color:var(--text-muted);line-height:1.65;}
+.result-stat{font-family:var(--font-disp);font-size:1.8rem;font-weight:900;margin-bottom:0.25rem;}
+.result-card.gold .result-stat{color:var(--gold);}
+.result-card.green .result-stat{color:var(--green);}
+.result-card.blue .result-stat{color:var(--blue);}
+.result-card.purple .result-stat{color:var(--purple);}
+
+/* ABOUT AUTHOR */
+.author-card{padding:2rem;background:var(--bg2);border:1px solid var(--border);border-radius:4px;border-top:2px solid var(--gold-dim);display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;margin-top:1.5rem;}
+.author-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dim),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--font-disp);font-size:1.4rem;font-weight:900;color:var(--bg);flex-shrink:0;}
+.author-name{font-family:var(--font-disp);font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;}
+.author-role{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem;}
+.author-bio{font-size:0.84rem;color:var(--text-muted);line-height:1.65;margin-bottom:0.75rem;}
+.author-links{display:flex;gap:1rem;flex-wrap:wrap;}
+.author-link{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);display:flex;align-items:center;gap:0.35rem;transition:color 0.2s;}
+.author-link:hover{color:var(--gold);text-decoration:none;}
+
+/* GATE PILLS (stage 3 sub-stages) */
+.gate-list{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;}
+.gate-pill{padding:0.3rem 0.8rem;border-radius:20px;font-size:0.72rem;font-family:var(--font-mono);border:1px solid;display:flex;align-items:center;gap:0.4rem;}
+.gate-pill::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.gate-1{color:#8a9fd9;border-color:rgba(138,159,217,0.25);background:rgba(138,159,217,0.06);}
+.gate-2{color:#9bb89b;border-color:rgba(155,184,155,0.25);background:rgba(155,184,155,0.06);}
+.gate-3{color:var(--blue);border-color:rgba(74,143,217,0.25);background:rgba(74,143,217,0.06);}
+.gate-4{color:var(--purple);border-color:rgba(155,111,212,0.25);background:rgba(155,111,212,0.06);}
+.gate-5{color:var(--gold);border-color:rgba(201,168,76,0.25);background:rgba(201,168,76,0.06);}
+.gate-6{color:#c48a5a;border-color:rgba(196,138,90,0.25);background:rgba(196,138,90,0.06);}
+.gate-7{color:var(--green);border-color:rgba(61,186,124,0.25);background:rgba(61,186,124,0.06);}
+
+/* AUTOMATION LIST */
+.auto-list{margin-top:1rem;display:flex;flex-direction:column;gap:0.5rem;}
+.auto-item{display:flex;align-items:center;gap:0.85rem;padding:0.7rem 1rem;background:var(--bg3);border:1px solid var(--border);border-radius:3px;font-size:0.84rem;color:var(--text-muted);}
+.auto-item::before{content:"⚡";font-size:0.75rem;flex-shrink:0;}
+
+@media(max-width:640px){
+  .hero{padding:40px 20px 36px;}
+  .content{padding:40px 20px 80px;}
+  .problem-grid,.tech-grid,.results-grid,.screenshot-grid{grid-template-columns:1fr;}
+  .screenshot-card.full{grid-column:auto;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .stats-row .stat-card:last-child{grid-column:1/-1;}
+  .branch-row{flex-direction:column;}
+  .author-card{grid-template-columns:1fr;}
+  .meta-pill{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Case Study · Workflow &amp; Process Design</div>
+    <h1 class="hero-title">Document Change Request<br><em>System</em></h1>
+    <p class="hero-subtitle">End-to-end workflow design and implementation in Monday.com — standardizing intake, routing, approvals, and archival across a regulated manufacturing environment.</p>
+
+    <div class="hero-meta">
+      <div class="meta-pill">
+        <span class="meta-pill-label">Industry</span>
+        <span class="meta-pill-value">Regulated Manufacturing / GMP</span>
+      </div>
+      <div class="meta-pill">
+        <span class="meta-pill-label">Role</span>
+        <span class="meta-pill-value">Technical Writer &amp; Process Designer</span>
+      </div>
+      <div class="meta-pill">
+        <span class="meta-pill-label">Platform</span>
+        <span class="meta-pill-value">Monday.com</span>
+      </div>
+      <div class="meta-pill">
+        <span class="meta-pill-label">Company</span>
+        <span class="meta-pill-value">Withheld (regulated environment)</span>
+      </div>
+    </div>
+
+    <div class="outcome-banner">
+      <span class="outcome-icon">📌</span>
+      <div class="outcome-text"><strong>Outcome:</strong> Faster approvals, improved change traceability and review visibility, fewer intake errors, and higher QA efficiency through a single prioritized cross-project dashboard.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+
+  <!-- SCALE AT A GLANCE -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num">~130</div>
+      <div class="stat-label">Active changes<br>managed by writers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">~100</div>
+      <div class="stat-label">Concurrent items<br>under QA review</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">~300</div>
+      <div class="stat-label">Requests active<br>across departments</div>
+    </div>
+  </div>
+
+  <!-- PROBLEM STATEMENT -->
+  <div class="section">
+    <div class="section-label">Problem Statement</div>
+    <h2 class="section-title">A high-volume, uncoordinated process</h2>
+    <div class="section-body">
+      <p>Before implementation, document change requests across multiple projects were impossible to track reliably. Requests arrived through email, SharePoint comments, multiple Monday boards, and verbal requests — with no unified intake, no ownership visibility, and no standardized approval path.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card">Limited visibility into the status and ownership of active change requests</div>
+      <div class="problem-card">Inconsistent prioritization across multiple concurrent projects</div>
+      <div class="problem-card">Back-and-forth clarifications due to incomplete or inconsistent change information</div>
+      <div class="problem-card">Increased coordination load on a short-staffed QA team</div>
+      <div class="problem-card">Increased operational risk due to lack of standardized governance</div>
+      <div class="problem-card">No single source of truth — requests scattered across channels</div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- SOLUTION ARCHITECTURE -->
+  <div class="section">
+    <div class="section-label">Solution Architecture</div>
+    <h2 class="section-title">Six integrated stages — end to end</h2>
+    <div class="section-body">
+      <p>The Monday.com workspace manages the complete document change request lifecycle through six integrated stages designed to enforce structured workflow governance, review accountability, and end-to-end traceability while improving operational efficiency.</p>
+    </div>
+
+    <!-- WORKFLOW DIAGRAM -->
+    <div class="workflow">
+      <div class="workflow-title">Workflow · Stage-by-Stage</div>
+      <div class="flow-stages">
+
+        <!-- Stage 1 -->
+        <div class="flow-stage">
+          <div class="flow-line">
+            <div class="flow-node" style="background:rgba(74,143,217,0.15);border:1.5px solid rgba(74,143,217,0.4);color:var(--blue);">1</div>
+            <div class="flow-connector"></div>
+          </div>
+          <div class="flow-body">
+            <div class="stage-card">
+              <div class="stage-num" style="color:var(--blue);">Stage 1 · Request Form Submission</div>
+              <div class="stage-name">Standardized Intake via Monday Form</div>
+              <div class="stage-desc">Users submit requests through a standardized Monday Form accessible across all departments. Required metadata includes document type, category, change reason, priority, due date, and attachments — eliminating incomplete or ambiguous requests at source.</div>
+              <div class="stage-chips">
+                <span class="stage-chip">Document Type</span>
+                <span class="stage-chip">Priority Field</span>
+                <span class="stage-chip">Due Date</span>
+                <span class="stage-chip">Attachments</span>
+                <span class="stage-chip">Conditional Logic</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="flow-stage">
+          <div class="flow-line">
+            <div class="flow-node" style="background:rgba(201,168,76,0.12);border:1.5px solid rgba(201,168,76,0.35);color:var(--gold);">2</div>
+            <div class="flow-connector"></div>
+          </div>
+          <div class="flow-body">
+            <div class="stage-card">
+              <div class="stage-num" style="color:var(--gold);">Stage 2 · Intake Board + Manager Review</div>
+              <div class="stage-name">Centralized Manager Decision Queue</div>
+              <div class="stage-desc">All submissions appear in a centralized Intake Board for manager decision-making. Automations notify the requester and route approved items to the correct Project Board.</div>
+              <div class="branch-row">
+                <div class="branch branch-approve"><div class="branch-label">Approved</div>Auto-route to project board</div>
+                <div class="branch branch-reject"><div class="branch-label">Rejected</div>Notification with justification</div>
+                <div class="branch branch-reassign"><div class="branch-label">Reassigned</div>Returned for more detail</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="flow-stage">
+          <div class="flow-line">
+            <div class="flow-node" style="background:rgba(155,111,212,0.12);border:1.5px solid rgba(155,111,212,0.35);color:var(--purple);">3</div>
+            <div class="flow-connector"></div>
+          </div>
+          <div class="flow-body">
+            <div class="stage-card">
+              <div class="stage-num" style="color:var(--purple);">Stage 3 · Departmental Workflow</div>
+              <div class="stage-name">Stage-Gated Review per Project</div>
+              <div class="stage-desc">Each Project Board follows a controlled workflow aligned to stage gates — ensuring no item advances without completing the prior review step. Items reaching QA Review automatically surface on the central QA dashboard.</div>
+              <div class="gate-list">
+                <span class="gate-pill gate-1">Draft Initiated</span>
+                <span class="gate-pill gate-2">Draft In Progress</span>
+                <span class="gate-pill gate-3">Department Review</span>
+                <span class="gate-pill gate-4">QA Review</span>
+                <span class="gate-pill gate-5">QA Pre-Approved</span>
+                <span class="gate-pill gate-6">Client Review</span>
+                <span class="gate-pill gate-7">Final Approved</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="flow-stage">
+          <div class="flow-line">
+            <div class="flow-node" style="background:rgba(61,186,124,0.12);border:1.5px solid rgba(61,186,124,0.35);color:var(--green);">4</div>
+            <div class="flow-connector"></div>
+          </div>
+          <div class="flow-body">
+            <div class="stage-card">
+              <div class="stage-num" style="color:var(--green);">Stage 4 · Central QA Review Board</div>
+              <div class="stage-name">Cross-Project QA Consolidation Dashboard</div>
+              <div class="stage-desc">When items reach QA Review, they automatically appear on a centralized QA dashboard consolidating requests from all projects. QA can drag-and-drop prioritize while preserving metadata, comments, and attachments — giving a short-staffed team full control without losing traceability.</div>
+              <div class="stage-chips">
+                <span class="stage-chip">Cross-project consolidation</span>
+                <span class="stage-chip">Drag-drop prioritization</span>
+                <span class="stage-chip">Metadata preserved</span>
+                <span class="stage-chip">Attachment access</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 5 -->
+        <div class="flow-stage">
+          <div class="flow-line">
+            <div class="flow-node" style="background:rgba(212,131,74,0.12);border:1.5px solid rgba(212,131,74,0.35);color:var(--orange);">5</div>
+            <div class="flow-connector"></div>
+          </div>
+          <div class="flow-body">
+            <div class="stage-card">
+              <div class="stage-num" style="color:var(--orange);">Stage 5 · QA Pre-Approved → Project Board Return</div>
+              <div class="stage-name">Return to Project for Final Closure</div>
+              <div class="stage-desc">After QA pre-approval, items automatically return to the originating Project Board for final stakeholder steps (if applicable) and final approval — keeping the QA board clean and the project board as the single source of record.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 6 -->
+        <div class="flow-stage">
+          <div class="flow-line">
+            <div class="flow-node" style="background:rgba(201,168,76,0.15);border:1.5px solid var(--gold-dim);color:var(--gold);">6</div>
+            <div class="flow-connector" style="display:none;"></div>
+          </div>
+          <div class="flow-body">
+            <div class="stage-card" style="border-color:var(--gold-dim);">
+              <div class="stage-num" style="color:var(--gold);">Stage 6 · Effective Documents Repository</div>
+              <div class="stage-name">Final Archive &amp; Traceability</div>
+              <div class="stage-desc">Once marked Effective, items move to the Effective Documents Board — the final archive. Active boards stay clean while complete change history, metadata, and approval records are preserved for reporting, audit support, and inspection readiness.</div>
+              <div class="stage-chips">
+                <span class="stage-chip">Audit-ready</span>
+                <span class="stage-chip">Complete history</span>
+                <span class="stage-chip">Inspection support</span>
+                <span class="stage-chip">GMP traceability</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- SCREENSHOTS -->
+  <div class="section">
+    <div class="section-label">System in Action</div>
+    <h2 class="section-title">Live views from the platform</h2>
+
+    <div class="screenshot-section">
+      <div class="screenshot-grid">
+
+        <div class="screenshot-card full">
+          <div class="screenshot-img-wrap">
+            <img src="image.png" alt="Workflow Architecture Diagram"/>
+          </div>
+          <div class="screenshot-caption">
+            <span class="screenshot-fig">Fig. 0</span>
+            <span class="screenshot-cap-text">Full system architecture — from Request Form intake through Effective Documents archive</span>
+          </div>
+        </div>
+
+        <div class="screenshot-card">
+          <div class="screenshot-img-wrap">
+            <img src="image 1.png" alt="PKT Request Form"/>
+          </div>
+          <div class="screenshot-caption">
+            <span class="screenshot-fig">Fig. 1</span>
+            <span class="screenshot-cap-text">Standardized PKT Request Form with required metadata fields</span>
+          </div>
+        </div>
+
+        <div class="screenshot-card">
+          <div class="screenshot-img-wrap">
+            <img src="image 2.png" alt="Intake Board / Packet Requests"/>
+          </div>
+          <div class="screenshot-caption">
+            <span class="screenshot-fig">Fig. 2</span>
+            <span class="screenshot-cap-text">Intake Board — manager decision queue (Packet Requests)</span>
+          </div>
+        </div>
+
+        <div class="screenshot-card">
+          <div class="screenshot-img-wrap">
+            <img src="image 3.png" alt="Departmental Project Board"/>
+          </div>
+          <div class="screenshot-caption">
+            <span class="screenshot-fig">Fig. 3</span>
+            <span class="screenshot-cap-text">Departmental Project Board — workflow groups and stage-gate status</span>
+          </div>
+        </div>
+
+        <div class="screenshot-card">
+          <div class="screenshot-img-wrap">
+            <img src="image 4.png" alt="QA Review Board"/>
+          </div>
+          <div class="screenshot-caption">
+            <span class="screenshot-fig">Fig. 4</span>
+            <span class="screenshot-cap-text">Central QA Review Board — cross-project consolidation with prioritization</span>
+          </div>
+        </div>
+
+        <div class="screenshot-card">
+          <div class="screenshot-img-wrap">
+            <img src="image 5.png" alt="Pre-approved items returning to project board"/>
+          </div>
+          <div class="screenshot-caption">
+            <span class="screenshot-fig">Fig. 5</span>
+            <span class="screenshot-cap-text">Pre-approved items returning to project board for final closure</span>
+          </div>
+        </div>
+
+        <div class="screenshot-card">
+          <div class="screenshot-img-wrap">
+            <img src="image 6.png" alt="Effective Documents Repository"/>
+          </div>
+          <div class="screenshot-caption">
+            <span class="screenshot-fig">Fig. 6</span>
+            <span class="screenshot-cap-text">Effective Documents repository — final archive with full traceability</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- TECHNICAL IMPLEMENTATION -->
+  <div class="section">
+    <div class="section-label">Technical Implementation</div>
+    <h2 class="section-title">Monday.com features utilized</h2>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-card-icon">📋</div>
+        <div class="tech-card-title">Monday Forms</div>
+        <div class="tech-card-desc">Standardized intake with conditional logic and field validation — ensuring complete, structured data at submission.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-card-icon">⚙️</div>
+        <div class="tech-card-title">Automations</div>
+        <div class="tech-card-desc">Status-based routing, notifications, and cross-board item moves — eliminating manual handoffs between workflow stages.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-card-icon">🗂️</div>
+        <div class="tech-card-title">Custom Fields</div>
+        <div class="tech-card-desc">Document type, priority, review status, approval dates, and metadata columns — structured for reporting and inspection readiness.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-card-icon">🔗</div>
+        <div class="tech-card-title">Integrations</div>
+        <div class="tech-card-desc">Email notifications, file attachments, and SharePoint connectors — linking the workflow to existing document management infrastructure.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-card-icon">🔐</div>
+        <div class="tech-card-title">Permissions</div>
+        <div class="tech-card-desc">Role-based access for managers, QA reviewers, and general users — enforcing governance without restricting visibility.</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-card-icon">📊</div>
+        <div class="tech-card-title">Mirror Columns</div>
+        <div class="tech-card-desc">Cross-board data mirroring for the central QA dashboard — real-time visibility across all projects without data duplication.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem;">
+      <div class="section-label">Automation Rules</div>
+      <div class="auto-list">
+        <div class="auto-item">Status change triggers to route items between boards automatically</div>
+        <div class="auto-item">Due date reminders pushed to assignees and reviewers</div>
+        <div class="auto-item">Email notifications to requesters on approval, rejection, or reassignment</div>
+        <div class="auto-item">Automatic archival of completed items to the Effective Documents board</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- RESULTS -->
+  <div class="section">
+    <div class="section-label">Results &amp; Impact</div>
+    <h2 class="section-title">Measurable outcomes</h2>
+    <div class="results-grid">
+      <div class="result-card gold">
+        <div class="result-icon">📊</div>
+        <div class="result-stat">95%+</div>
+        <div class="result-title">Centralized Capture Rate</div>
+        <div class="result-desc">Form-based intake resulted in 95%+ of document change requests being captured in a single workflow — dramatically improving tracking and ownership visibility.</div>
+      </div>
+      <div class="result-card green">
+        <div class="result-icon">🎯</div>
+        <div class="result-stat">~10%</div>
+        <div class="result-title">Documentation Accuracy Gain</div>
+        <div class="result-desc">A single standardized submission method made it easier for multiple departments to clearly communicate required updates, reducing rework and back-and-forth.</div>
+      </div>
+      <div class="result-card purple">
+        <div class="result-icon">🧾</div>
+        <div class="result-stat">100+</div>
+        <div class="result-title">Concurrent QA Items Managed</div>
+        <div class="result-desc">Enabled a short-staffed QA team to manage 100+ concurrent change requests through a centralized, prioritizable dashboard — without losing traceability.</div>
+      </div>
+      <div class="result-card blue">
+        <div class="result-icon">⏱️</div>
+        <div class="result-stat">~15%</div>
+        <div class="result-title">Faster Approval Cycles</div>
+        <div class="result-desc">Automated routing and manager gatekeeping reduced manual back-and-forth, resulting in approximately 15% faster approval turnaround across all projects.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- AUTHOR -->
+  <div class="section">
+    <div class="section-label">About the Author</div>
+    <div class="author-card">
+      <div class="author-avatar">VP</div>
+      <div>
+        <div class="author-name">Viren Patel</div>
+        <div class="author-role">Technical Writer &amp; Documentation Specialist</div>
+        <div class="author-bio">B.Eng. in Electrical Engineering with experience in GMP-regulated pharmaceutical manufacturing. Develops SOPs, O&amp;M manuals, training materials, and workflow/process automation solutions for quality-critical environments.</div>
+        <div class="author-links">
+          <a href="https://viren024.github.io" class="author-link">🌐 viren024.github.io</a>
+          <a href="mailto:patelviren024@gmail.com" class="author-link">✉️ patelviren024@gmail.com</a>
+          <a href="https://linkedin.com/in/virenpatel024" class="author-link">🔗 LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
