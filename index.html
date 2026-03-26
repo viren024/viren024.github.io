@@ -266,13 +266,13 @@
 <body>
 
 <nav>
-  <a class="nav-logo" onclick="showPage('home')">VP<span>.</span></a>
+  <a class="nav-logo" data-page="home">VP<span>.</span></a>
   <ul class="nav-links" id="navLinks">
-    <li><a onclick="showPage('about')">About</a></li>
-    <li><a onclick="showPage('experience')">Experience</a></li>
-    <li><a onclick="showPage('portfolio')">Portfolio</a></li>
-    <li><a onclick="showPage('initiatives')">Initiatives</a></li>
-    <li><a onclick="showPage('contact')" class="nav-cta">Hire Me</a></li>
+    <li><a data-page="about">About</a></li>
+    <li><a data-page="experience">Experience</a></li>
+    <li><a data-page="portfolio">Portfolio</a></li>
+    <li><a data-page="initiatives">Initiatives</a></li>
+    <li><a data-page="contact" class="nav-cta">Hire Me</a></li>
   </ul>
   <div class="nav-toggle" id="navToggle"><span></span><span></span><span></span></div>
 </nav>
@@ -290,8 +290,8 @@
       <div class="hero-title">B.Eng · GMP · ISO · O&amp;M · SOP · Training</div>
       <p class="hero-desc">I hold a <strong>B.Eng. in Electrical Engineering</strong> and write documentation that <strong>regulators approve</strong> and <strong>technicians actually use</strong> — GMP-compliant SOPs, full O&amp;M manuals, and training programs for pharma, manufacturing, and electrical systems.</p>
       <div class="hero-actions">
-        <button onclick="showPage('portfolio')" class="btn-primary">View Work Samples →</button>
-        <button onclick="showPage('contact')" class="btn-secondary">Get in Touch</button>
+        <button data-page="portfolio" class="btn-primary">View Work Samples →</button>
+        <button data-page="contact" class="btn-secondary">Get in Touch</button>
       </div>
       <div class="hero-tags">
         <span class="tag">GMP Compliant</span><span class="tag">ISO 9001</span><span class="tag">O&amp;M Manuals</span><span class="tag">SOP Development</span><span class="tag">MasterControl</span><span class="tag">Adobe FrameMaker L1</span><span class="tag">SolidWorks</span><span class="tag">Hazard Logs</span><span class="tag">21 CFR Part 211</span>
@@ -342,7 +342,7 @@
         </div>
       </div>
     </div>
-    <div class="view-all-wrap"><button onclick="showPage('portfolio')" class="btn-primary">View Full Portfolio →</button></div>
+    <div class="view-all-wrap"><button data-page="portfolio" class="btn-primary">View Full Portfolio →</button></div>
   </div>
 </section>
 </div>
@@ -670,6 +670,42 @@
 </footer>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  function showPage(id) {
+    document.querySelectorAll(".page").forEach(function(p){ p.classList.remove("active"); });
+    var target = document.getElementById("page-" + id);
+    if(target) target.classList.add("active");
+    document.querySelectorAll(".nav-links a").forEach(function(a){ a.classList.remove("active"); });
+    var map = {home:"VP.",about:"About",experience:"Experience",portfolio:"Portfolio",initiatives:"Initiatives",contact:"Hire Me"};
+    document.querySelectorAll(".nav-links a").forEach(function(a){
+      if(a.textContent.trim() === (map[id]||"")) a.classList.add("active");
+    });
+    window.scrollTo({top:0,behavior:"instant"});
+    document.getElementById("navLinks").classList.remove("open");
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("[data-page]").forEach(function(el) {
+      el.addEventListener("click", function(e) {
+        e.preventDefault();
+        showPage(el.getAttribute("data-page"));
+      });
+    });
+
+    document.getElementById("navToggle").addEventListener("click", function() {
+      document.getElementById("navLinks").classList.toggle("open");
+    });
+
+    var heroEls = document.querySelectorAll(".hero-eyebrow,.hero-name,.hero-title,.hero-desc,.hero-actions,.hero-tags,.hero-stats,.hero-avail");
+    heroEls.forEach(function(el,i){
+      el.style.opacity="0";
+      el.style.transform="translateY(20px)";
+      el.style.transition="opacity 0.6s ease "+i*0.1+"s,transform 0.6s ease "+i*0.1+"s";
+      requestAnimationFrame(function(){requestAnimationFrame(function(){ el.style.opacity="1"; el.style.transform="translateY(0)"; });});
+    });
+  });
+</script><script>
   document.getElementById("yr").textContent = new Date().getFullYear();
 
   function showPage(id) {
